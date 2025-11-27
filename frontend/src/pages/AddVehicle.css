@@ -1,0 +1,129 @@
+.add-vehicle-page {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.page-header h2 {
+  margin: 0;
+  color: #111827;
+}
+
+.error-alert {
+  background-color: #fee2e2;
+  color: #991b1b;
+  padding: 1rem;
+  border-radius: 6px;
+  margin-bottom: 1.5rem;
+  border-left: 4px solid #dc2626;
+}
+
+.add-vehicle-form {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+}
+
+.form-section {
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.form-section:last-of-type {
+  border-bottom: none;
+}
+
+.form-section h3 {
+  margin: 0 0 1.5rem 0;
+  color: #111827;
+  font-size: 1.25rem;
+}
+
+.section-header {
+  margin-bottom: 1.5rem;
+}
+
+.section-description {
+  margin: 0.5rem 0 0 0;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.maintenance-items-list {
+  margin-bottom: 1.5rem;
+}
+
+.maintenance-item-card {
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.item-info {
+  flex: 1;
+}
+
+.item-info h4 {
+  margin: 0 0 0.5rem 0;
+  color: #111827;
+  font-size: 1rem;
+}
+
+.item-frequency {
+  margin: 0 0 0.25rem 0;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.item-notes {
+  margin: 0.5rem 0 0 0;
+  color: #4b5563;
+  font-size: 0.875rem;
+  font-style: italic;
+}
+
+.form-footer {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .add-vehicle-form {
+    padding: 1.5rem;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .maintenance-item-card {
+    flex-direction: column;
+  }
+}
