@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Button from '../components/Button'
-import CircularProgress from '../components/CircularProgress'
+import ProgressBar from '../components/ProgressBar'
 import { vehicleAPI, maintenanceItemAPI, maintenanceLogAPI } from '../services/api'
 import './Dashboard.css'
 
@@ -43,19 +43,22 @@ function Dashboard() {
               })
             )
 
-            // Calculate health score
+            // Calculate health score and get top urgent items
             const health = calculateVehicleHealth(vehicle, itemsWithLogs)
+            const topUrgentItems = getTopUrgentItems(vehicle, itemsWithLogs, 3)
 
             return {
               ...vehicle,
               maintenanceItems: itemsWithLogs,
-              health
+              health,
+              topUrgentItems
             }
           } catch (err) {
             return {
               ...vehicle,
               maintenanceItems: [],
-              health: { score: 100, status: 'good', itemsDue: 0 }
+              health: { score: 100, status: 'good', itemsDue: 0 },
+              topUrgentItems: []
             }
           }
         })
@@ -108,6 +111,28 @@ function Dashboard() {
       itemsDue,
       itemsOverdue
     }
+  }
+
+  const getTopUrgentItems = (vehicle, items, count = 3) => {
+    // Get all items with their status
+    const itemsWithStatus = items.map(item => ({
+      ...item,
+      statusInfo: getItemStatus(vehicle, item)
+    }))
+
+    // Sort by percentage remaining (lowest first = most urgent)
+    // Items with 'never' status (0%) should be at the end
+    const sorted = itemsWithStatus.sort((a, b) => {
+      // If one has never been done, put it at the end
+      if (a.statusInfo.status === 'never' && b.statusInfo.status !== 'never') return 1
+      if (b.statusInfo.status === 'never' && a.statusInfo.status !== 'never') return -1
+
+      // Otherwise sort by percentage (lower = more urgent)
+      return a.statusInfo.percentageRemaining - b.statusInfo.percentageRemaining
+    })
+
+    // Return top N items
+    return sorted.slice(0, count)
   }
 
   const getItemStatus = (vehicle, item) => {
@@ -201,15 +226,8 @@ function Dashboard() {
                     </span>
                   )}
                 </div>
-                {vehicle.health && (
-                  <CircularProgress
-                    percentage={vehicle.health.score}
-                    status={vehicle.health.status}
-                    size={60}
-                    strokeWidth={5}
-                  />
-                )}
               </div>
+
               <div className="vehicle-details">
                 {vehicle.engine_type && (
                   <p className="detail-item">
@@ -225,6 +243,33 @@ function Dashboard() {
                   </p>
                 )}
               </div>
+
+              {vehicle.topUrgentItems && vehicle.topUrgentItems.length > 0 && (
+                <div className="urgent-items">
+                  <h4 className="urgent-items-title">Upcoming Maintenance</h4>
+                  <div className="urgent-items-list">
+                    {vehicle.topUrgentItems.map((item) => (
+                      <div key={item.id} className="urgent-item">
+                        <div className="urgent-item-header">
+                          <span className="urgent-item-name">{item.name}</span>
+                          <span className={`urgent-item-status status-${item.statusInfo.status}`}>
+                            {item.statusInfo.status === 'overdue' && 'Overdue'}
+                            {item.statusInfo.status === 'due-soon' && 'Due Soon'}
+                            {item.statusInfo.status === 'good' && 'Good'}
+                            {item.statusInfo.status === 'never' && 'Not Done'}
+                          </span>
+                        </div>
+                        <ProgressBar
+                          percentage={item.statusInfo.percentageRemaining}
+                          status={item.statusInfo.status}
+                          showLabel={false}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div className="vehicle-actions">
                 <Button variant="outline" onClick={() => navigate(`/vehicle/${vehicle.id}`)}>
                   View Details
