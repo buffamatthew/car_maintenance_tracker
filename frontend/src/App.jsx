@@ -10,6 +10,7 @@ import MaintenanceLog from './pages/MaintenanceLog'
 import MaintenanceHistory from './pages/MaintenanceHistory'
 import GeneralMaintenance from './pages/GeneralMaintenance'
 import GeneralMaintenanceHistory from './pages/GeneralMaintenanceHistory'
+import Settings from './pages/Settings'
 import './App.css'
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
             <Route path="/maintenance-log" element={<MaintenanceLog />} />
             <Route path="/general-maintenance" element={<GeneralMaintenance />} />
             <Route path="/vehicle/:vehicleId/general-maintenance" element={<GeneralMaintenanceHistory />} />
+            <Route path="/settings" element={<Settings />} />
           </Routes>
         </main>
       </div>

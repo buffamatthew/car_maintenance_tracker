@@ -62,4 +62,19 @@ export const generalMaintenanceAPI = {
   deleteAttachment: (id) => api.delete(`/general-maintenance/attachments/${id}`)
 }
 
+export const backupAPI = {
+  export: () => {
+    // Use axios directly to handle file download
+    return axios.get(`${API_BASE_URL}/backup/export`, {
+      responseType: 'blob'
+    })
+  },
+  import: (file, mode = 'merge') => {
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('mode', mode)
+    return axios.post(`${API_BASE_URL}/backup/import`, formData)
+  }
+}
+
 export default api

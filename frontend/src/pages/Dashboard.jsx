@@ -192,9 +192,14 @@ function Dashboard() {
     <div className="dashboard-page">
       <div className="page-header">
         <h2>Dashboard</h2>
-        <Button onClick={() => navigate('/add-vehicle')}>
-          + Add Vehicle
-        </Button>
+        <div className="header-actions">
+          <Button variant="outline" onClick={() => navigate('/settings')}>
+            ⚙️ Settings
+          </Button>
+          <Button onClick={() => navigate('/add-vehicle')}>
+            + Add Vehicle
+          </Button>
+        </div>
       </div>
 
       {error && (
