@@ -17,6 +17,7 @@ function MaintenanceHistory() {
   const [editFormData, setEditFormData] = useState({
     date_performed: '',
     mileage: '',
+    cost: '',
     notes: '',
     receipt_photo: null,
     remove_receipt: false
@@ -55,6 +56,7 @@ function MaintenanceHistory() {
     setEditFormData({
       date_performed: log.date_performed,
       mileage: log.mileage || '',
+      cost: log.cost || '',
       notes: log.notes || '',
       receipt_photo: null,
       remove_receipt: false
@@ -66,6 +68,7 @@ function MaintenanceHistory() {
     setEditFormData({
       date_performed: '',
       mileage: '',
+      cost: '',
       notes: '',
       receipt_photo: null,
       remove_receipt: false
@@ -107,6 +110,9 @@ function MaintenanceHistory() {
         if (editFormData.mileage) {
           submitData.append('mileage', editFormData.mileage)
         }
+        if (editFormData.cost) {
+          submitData.append('cost', editFormData.cost)
+        }
         if (editFormData.notes) {
           submitData.append('notes', editFormData.notes)
         }
@@ -116,6 +122,7 @@ function MaintenanceHistory() {
         submitData = {
           date_performed: editFormData.date_performed,
           mileage: editFormData.mileage || null,
+          cost: editFormData.cost || null,
           notes: editFormData.notes || null,
           remove_receipt: editFormData.remove_receipt
         }
@@ -129,6 +136,7 @@ function MaintenanceHistory() {
       setEditFormData({
         date_performed: '',
         mileage: '',
+        cost: '',
         notes: '',
         receipt_photo: null,
         remove_receipt: false
@@ -252,6 +260,19 @@ function MaintenanceHistory() {
                   </div>
 
                   <div className="form-group">
+                    <label>Cost (optional)</label>
+                    <input
+                      type="number"
+                      name="cost"
+                      value={editFormData.cost}
+                      onChange={handleEditFormChange}
+                      placeholder="e.g., 45.99"
+                      step="0.01"
+                      min="0"
+                    />
+                  </div>
+
+                  <div className="form-group">
                     <label>Notes (optional)</label>
                     <textarea
                       name="notes"
@@ -317,6 +338,12 @@ function MaintenanceHistory() {
                       <div className="log-mileage">
                         <span className="mileage-value">{log.mileage.toLocaleString()}</span>
                         <span className="mileage-unit">miles</span>
+                      </div>
+                    )}
+                    {log.cost && (
+                      <div className="log-cost">
+                        <span className="cost-label">Cost:</span>
+                        <span className="cost-value">${parseFloat(log.cost).toFixed(2)}</span>
                       </div>
                     )}
                   </div>

@@ -15,6 +15,7 @@ class Vehicle(db.Model):
 
     # Relationships
     maintenance_items = db.relationship('MaintenanceItem', backref='vehicle', lazy=True, cascade='all, delete-orphan')
+    general_maintenance = db.relationship('GeneralMaintenance', backref='vehicle', lazy=True, cascade='all, delete-orphan')
 
     def to_dict(self):
         return {

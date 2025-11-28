@@ -16,10 +16,11 @@ def create_app(config_class=Config):
     CORS(app)
 
     # Register blueprints
-    from app.routes import vehicles, maintenance_items, maintenance_logs
+    from app.routes import vehicles, maintenance_items, maintenance_logs, general_maintenance
     app.register_blueprint(vehicles.bp)
     app.register_blueprint(maintenance_items.bp)
     app.register_blueprint(maintenance_logs.bp)
+    app.register_blueprint(general_maintenance.bp)
 
     # Create upload folder if it doesn't exist
     import os

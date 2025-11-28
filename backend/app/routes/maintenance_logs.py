@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify, current_app
 from werkzeug.utils import secure_filename
 from app import db
-from app.models import MaintenanceLog, MaintenanceItem, Vehicle
+from app.models import MaintenanceLog, MaintenanceItem, Vehicle, Attachment
 from datetime import datetime
 import os
 
@@ -37,7 +37,7 @@ def create_maintenance_log():
     # Parse date
     date_performed = datetime.fromisoformat(data['date_performed']).date()
 
-    # Handle file upload
+    # Handle legacy single file upload (for backwards compatibility)
     receipt_photo = None
     if 'receipt_photo' in request.files:
         file = request.files['receipt_photo']
@@ -50,18 +50,41 @@ def create_maintenance_log():
             file.save(filepath)
             receipt_photo = filename
 
-    # Convert mileage to int if provided
+    # Convert mileage and cost to appropriate types if provided
     mileage = int(data.get('mileage')) if data.get('mileage') else None
+    cost = float(data.get('cost')) if data.get('cost') else None
 
     log = MaintenanceLog(
         maintenance_item_id=data['maintenance_item_id'],
         date_performed=date_performed,
         mileage=mileage,
+        cost=cost,
         notes=data.get('notes'),
         receipt_photo=receipt_photo
     )
 
     db.session.add(log)
+    db.session.flush()  # Get the log ID
+
+    # Handle multiple file attachments
+    files = request.files.getlist('attachments')
+    for file in files:
+        if file and file.filename and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            unique_filename = f"{timestamp}_{filename}"
+            filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], unique_filename)
+            file.save(filepath)
+
+            # Create attachment record
+            attachment = Attachment(
+                filename=filename,
+                file_path=filepath,
+                file_type=file.content_type,
+                file_size=os.path.getsize(filepath),
+                maintenance_log_id=log.id
+            )
+            db.session.add(attachment)
 
     # Update vehicle mileage if provided and higher than current
     if log.mileage:
@@ -88,9 +111,32 @@ def update_maintenance_log(log_id):
     if 'mileage' in data:
         log.mileage = int(data.get('mileage')) if data.get('mileage') else None
 
+    # Update cost if provided
+    if 'cost' in data:
+        log.cost = float(data.get('cost')) if data.get('cost') else None
+
     # Update notes if provided
     if 'notes' in data:
         log.notes = data.get('notes')
+
+    # Handle new file attachments
+    files = request.files.getlist('attachments')
+    for file in files:
+        if file and file.filename and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            unique_filename = f"{timestamp}_{filename}"
+            filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], unique_filename)
+            file.save(filepath)
+
+            attachment = Attachment(
+                filename=filename,
+                file_path=filepath,
+                file_type=file.content_type,
+                file_size=os.path.getsize(filepath),
+                maintenance_log_id=log.id
+            )
+            db.session.add(attachment)
 
     # Handle receipt removal
     if data.get('remove_receipt'):
@@ -134,13 +180,32 @@ def update_maintenance_log(log_id):
 def delete_maintenance_log(log_id):
     log = MaintenanceLog.query.get_or_404(log_id)
 
-    # Delete associated file if exists
+    # Delete associated legacy file if exists
     if log.receipt_photo:
         filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], log.receipt_photo)
         if os.path.exists(filepath):
             os.remove(filepath)
 
+    # Delete all attachments
+    for attachment in log.attachments:
+        if os.path.exists(attachment.file_path):
+            os.remove(attachment.file_path)
+
     db.session.delete(log)
+    db.session.commit()
+
+    return '', 204
+
+@bp.route('/attachments/<int:id>', methods=['DELETE'])
+def delete_attachment(id):
+    """Delete a specific attachment"""
+    attachment = Attachment.query.get_or_404(id)
+
+    # Delete the file
+    if os.path.exists(attachment.file_path):
+        os.remove(attachment.file_path)
+
+    db.session.delete(attachment)
     db.session.commit()
 
     return '', 204

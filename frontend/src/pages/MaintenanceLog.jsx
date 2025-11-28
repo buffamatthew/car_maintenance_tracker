@@ -27,6 +27,7 @@ function MaintenanceLog() {
     maintenance_item_id: preSelectedItemId || '',
     date_performed: new Date().toISOString().split('T')[0], // Today's date
     mileage: '',
+    cost: '',
     notes: '',
     receipt_photo: null
   })
@@ -119,6 +120,9 @@ function MaintenanceLog() {
       submitData.append('maintenance_item_id', formData.maintenance_item_id)
       submitData.append('date_performed', formData.date_performed)
       submitData.append('mileage', formData.mileage)
+      if (formData.cost) {
+        submitData.append('cost', formData.cost)
+      }
       if (formData.notes) {
         submitData.append('notes', formData.notes)
       }
@@ -243,6 +247,17 @@ function MaintenanceLog() {
                   Vehicle's last recorded mileage: {selectedVehicle.current_mileage.toLocaleString()} miles
                 </p>
               )}
+
+              <Input
+                label="Cost (Optional)"
+                name="cost"
+                type="number"
+                value={formData.cost}
+                onChange={handleChange}
+                placeholder="e.g., 45.99"
+                min="0"
+                step="0.01"
+              />
 
               <TextArea
                 label="Notes (Optional)"

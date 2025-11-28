@@ -168,24 +168,26 @@ A Docker-based web application for tracking vehicle maintenance, accessible on m
 
 ### 🚧 In Progress
 
-Phase 5: Dashboard Visualizations - Starting now!
+Phase 6.6: General Maintenance Records & Enhanced Logging - Starting now!
 
 ### 📋 Planned Phases
 
-#### Phase 5: Dashboard Visualizations (IN PROGRESS)
-- [ ] Gauge/chart components for individual maintenance items
-- [ ] Visual representation of maintenance status
-- [ ] Overview display for all vehicles on main dashboard
-- [ ] Enhanced color coding and progress bars
+#### Phase 6.6: General Maintenance Records & Enhanced Logging (IN PROGRESS)
 
-#### Phase 6.6: General Maintenance Records (RECOMMENDED)
-- [ ] Add "one-off" maintenance records without recurring schedule
-- [ ] Support for ad-hoc repairs (AC repair, body work, etc.)
-- [ ] Track date, mileage, service description, cost
+**Enhanced Maintenance Logging (applies to both scheduled & ad-hoc):**
+- [ ] Add optional price/cost field to all maintenance logs
+- [ ] Support multiple document/receipt attachments per log
+- [ ] Create shared attachment system for all maintenance types
+- [ ] Update database schema for attachments and pricing
+- [ ] Enhance log display to show costs and multiple attachments
+
+**General Maintenance (one-off repairs):**
+- [ ] New GeneralMaintenance model (no recurring schedule)
+- [ ] Add general maintenance records (description, date, mileage, cost)
+- [ ] View all general maintenance in vehicle detail page
+- [ ] Edit/delete general maintenance records
+- [ ] Filter and search capabilities
 - [ ] Attach multiple documents/receipts
-- [ ] View all general maintenance in a separate section
-- [ ] Filter and search general maintenance records
-- [ ] No status calculation (not recurring)
 
 **Use Cases:**
 - Accident repairs
