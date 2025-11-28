@@ -151,13 +151,30 @@ None currently - Phase 6.5 just completed!
 
 ### 📋 Planned Phases
 
-#### Phase 5: Dashboard Visualizations (NEXT - OPTIONAL)
+#### Phase 5: Dashboard Visualizations (OPTIONAL)
 - [ ] Gauge/chart components for individual maintenance items
 - [ ] Visual representation of maintenance status
 - [ ] Overview display for all vehicles on main dashboard
 - [ ] Enhanced color coding and progress bars
 
-#### Phase 7: Edit Vehicle & Items (NEXT - RECOMMENDED)
+#### Phase 6.6: General Maintenance Records (RECOMMENDED)
+- [ ] Add "one-off" maintenance records without recurring schedule
+- [ ] Support for ad-hoc repairs (AC repair, body work, etc.)
+- [ ] Track date, mileage, service description, cost
+- [ ] Attach multiple documents/receipts
+- [ ] View all general maintenance in a separate section
+- [ ] Filter and search general maintenance records
+- [ ] No status calculation (not recurring)
+
+**Use Cases:**
+- Accident repairs
+- AC/heater repairs
+- Electrical work
+- Tire purchases (not rotations)
+- Windshield replacement
+- Any non-recurring service work
+
+#### Phase 7: Edit Vehicle & Items (RECOMMENDED)
 - [ ] Edit vehicle information (year, make, model, engine, mileage)
 - [ ] Add new maintenance items to existing vehicles
 - [ ] Edit existing maintenance items (frequency, notes)
