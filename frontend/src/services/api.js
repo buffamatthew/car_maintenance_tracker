@@ -28,16 +28,10 @@ export const maintenanceItemAPI = {
 export const maintenanceLogAPI = {
   getAll: (itemId) => api.get('/maintenance-logs', { params: { maintenance_item_id: itemId } }),
   getById: (id) => api.get(`/maintenance-logs/${id}`),
-  create: (data) => {
-    const formData = new FormData()
-    Object.keys(data).forEach(key => {
-      if (data[key] !== null && data[key] !== undefined) {
-        formData.append(key, data[key])
-      }
-    })
-    return api.post('/maintenance-logs', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    })
+  create: (formData) => {
+    // FormData is already created in the component
+    // Don't set Content-Type - let axios set it automatically with boundary
+    return api.post('/maintenance-logs', formData)
   },
   delete: (id) => api.delete(`/maintenance-logs/${id}`)
 }

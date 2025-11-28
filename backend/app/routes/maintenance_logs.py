@@ -28,7 +28,8 @@ def get_maintenance_log(log_id):
 
 @bp.route('', methods=['POST'])
 def create_maintenance_log():
-    data = request.form if request.files else request.get_json()
+    # Use request.form for multipart/form-data, request.get_json() for application/json
+    data = request.form if request.form else request.get_json()
 
     # Verify maintenance item exists
     item = MaintenanceItem.query.get_or_404(data['maintenance_item_id'])
@@ -49,10 +50,13 @@ def create_maintenance_log():
             file.save(filepath)
             receipt_photo = filename
 
+    # Convert mileage to int if provided
+    mileage = int(data.get('mileage')) if data.get('mileage') else None
+
     log = MaintenanceLog(
         maintenance_item_id=data['maintenance_item_id'],
         date_performed=date_performed,
-        mileage=data.get('mileage'),
+        mileage=mileage,
         notes=data.get('notes'),
         receipt_photo=receipt_photo
     )
