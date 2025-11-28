@@ -1,6 +1,6 @@
 # Car Maintenance Tracker - Project Status
 
-**Last Updated:** 2025-11-27
+**Last Updated:** 2025-11-27 (Phase 4 Complete)
 
 ## Project Overview
 
@@ -77,42 +77,62 @@ A Docker-based web application for tracking vehicle maintenance, accessible on m
 - Components: `frontend/src/components/` (Button, Input, Select, TextArea, MaintenanceItemForm)
 - Pages: `frontend/src/pages/Dashboard.jsx`, `frontend/src/pages/AddVehicle.jsx`
 - API: `frontend/src/services/api.js`
-- Docs: `PHASE3_COMPLETE.md`
+
+#### Phase 4: Dashboard Core Features (COMPLETE)
+- [x] Vehicle detail view page (`/vehicle/:id`)
+- [x] Display all maintenance items for selected vehicle
+- [x] Calculate maintenance status:
+  - Smart mileage-based calculations (miles remaining)
+  - Smart time-based calculations (days remaining)
+  - Handle items never performed
+- [x] Visual status indicators with color coding:
+  - 🟢 Green (Good) - >20% interval remaining
+  - 🟡 Yellow (Due Soon) - ≤20% interval remaining
+  - 🔴 Red (Overdue) - Past due
+  - ⚪ Gray (Never) - Never performed
+- [x] Stats overview cards (mileage, item count, items needing attention)
+- [x] Last performed dates for each item
+- [x] "Log Maintenance" navigation buttons
+- [x] Mobile-responsive design
+
+**Files:**
+- Pages: `frontend/src/pages/VehicleDetail.jsx`, `frontend/src/pages/VehicleDetail.css`
+- Routes: Updated `frontend/src/App.jsx` with `/vehicle/:id` route
 
 ### 🚧 In Progress
 
-None currently - Phase 3 just completed!
+None currently - Phase 4 just completed!
 
 ### 📋 Planned Phases
 
-#### Phase 4: Dashboard Core Features (NEXT)
-- [ ] Vehicle selector dropdown
-- [ ] Display maintenance items for selected vehicle
-- [ ] Show current mileage for selected vehicle
-- [ ] Calculate time/mileage remaining for each item
-- [ ] Basic status display (green/yellow/red indicators)
-
-#### Phase 5: Dashboard Visualizations
+#### Phase 5: Dashboard Visualizations (NEXT)
 - [ ] Gauge/chart components for individual maintenance items
 - [ ] Visual representation of maintenance status
-- [ ] Overview display for all vehicles
-- [ ] Color coding for urgency (green/yellow/red)
+- [ ] Overview display for all vehicles on main dashboard
+- [ ] Enhanced color coding and progress bars
 
-#### Phase 6: Maintenance Log Feature
+#### Phase 6: Maintenance Log Feature (PRIORITY)
 - [ ] Maintenance log form UI
-- [ ] Select maintenance item from dropdown
+- [ ] Select vehicle and maintenance item from dropdowns
 - [ ] Log date, mileage, notes
 - [ ] Photo receipt upload
 - [ ] Auto-update vehicle mileage
-- [ ] Reset gauges after logging
+- [ ] Refresh vehicle detail page after logging
 
-#### Phase 7: Settings & User Management (Basic)
+#### Phase 7: Edit Vehicle & Items
+- [ ] Edit vehicle information (year, make, model, engine, mileage)
+- [ ] Add new maintenance items to existing vehicles
+- [ ] Edit existing maintenance items (frequency, notes)
+- [ ] Delete maintenance items
+- [ ] Delete vehicles
+
+#### Phase 8: Settings & User Management (Basic)
 - [ ] User authentication (login/register)
 - [ ] User-vehicle associations
 - [ ] Settings page UI
 - [ ] User management
 
-#### Phase 8: Nice-to-Have Features
+#### Phase 9: Nice-to-Have Features
 - [ ] Email notifications when maintenance is due
 - [ ] Mileage tracking integration
 - [ ] Export/import functionality
