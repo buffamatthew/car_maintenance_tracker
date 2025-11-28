@@ -1,6 +1,6 @@
 # Car Maintenance Tracker - Project Status
 
-**Last Updated:** 2025-11-27 (Phase 6 Complete)
+**Last Updated:** 2025-11-28 (Phase 6.5 Complete)
 
 ## Project Overview
 
@@ -120,9 +120,34 @@ A Docker-based web application for tracking vehicle maintenance, accessible on m
 - Fixed mileage type conversion (string to int)
 - Fixed axios Content-Type for multipart/form-data
 
+#### Phase 6.5: Maintenance History & Edit (COMPLETE)
+- [x] View maintenance history for each maintenance item
+- [x] Display all logs sorted by date (newest first)
+- [x] Inline receipt photo preview (images) and links (PDFs)
+- [x] Edit maintenance logs (date, mileage, notes, receipt)
+- [x] Delete maintenance logs with confirmation
+- [x] Upload new receipt photos when editing
+- [x] Remove existing receipt photos
+- [x] Navigate from VehicleDetail via "View History" button
+- [x] Route: `/vehicle/:vehicleId/item/:itemId/history`
+
+**Files:**
+- Pages: `frontend/src/pages/MaintenanceHistory.jsx`, `frontend/src/pages/MaintenanceHistory.css`
+- Backend: Added PUT route in `backend/app/routes/maintenance_logs.py`
+- Backend: Added `/uploads/<filename>` route in `backend/app/__init__.py`
+- API: Updated `frontend/src/services/api.js` (smart FormData/JSON handling)
+- Routes: Updated `frontend/src/App.jsx` with history route
+
+**Key Features:**
+- Inline edit form with Save/Cancel
+- Receipt photo management (view, replace, remove)
+- Smart FormData usage (only when file present)
+- File cleanup when receipts replaced or removed
+- Empty state when no logs exist
+
 ### 🚧 In Progress
 
-None currently - Phase 6 just completed!
+None currently - Phase 6.5 just completed!
 
 ### 📋 Planned Phases
 
