@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
 from app import db
 from app.models import GeneralMaintenance, Vehicle, Attachment
 from datetime import datetime
@@ -8,10 +8,16 @@ import os
 bp = Blueprint('general_maintenance', __name__, url_prefix='/api/general-maintenance')
 
 UPLOAD_FOLDER = 'uploads'
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'pdf', 'gif'}
 
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+def allowed_file(filename, app):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
+
+def validate_file_size(file, app):
+    """Check if file size is within limit"""
+    file.seek(0, os.SEEK_END)
+    size = file.tell()
+    file.seek(0)
+    return size <= app.config['MAX_ATTACHMENT_SIZE']
 
 @bp.route('', methods=['GET'])
 def get_all():
@@ -65,8 +71,16 @@ def create():
     db.session.flush()  # Get the record ID
 
     # Handle file attachments
+    # Validate attachment count
+    if len(files) > current_app.config['MAX_ATTACHMENTS_PER_LOG']:
+        return jsonify({'error': f"Maximum {current_app.config['MAX_ATTACHMENTS_PER_LOG']} attachments allowed"}), 400
+
     for file in files:
-        if file and file.filename and allowed_file(file.filename):
+        if file and file.filename and allowed_file(file.filename, current_app):
+            # Validate file size
+            if not validate_file_size(file, current_app):
+                return jsonify({'error': f"File {file.filename} exceeds maximum size of {current_app.config['MAX_ATTACHMENT_SIZE'] / (1024*1024)}MB"}), 400
+
             filename = secure_filename(file.filename)
             # Add timestamp to avoid collisions
             timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
@@ -83,6 +97,8 @@ def create():
                 general_maintenance_id=record.id
             )
             db.session.add(attachment)
+        elif file and file.filename:
+            return jsonify({'error': f"File type not allowed for {file.filename}"}), 400
 
     # Update vehicle mileage if this is higher
     if record.mileage and record.mileage > vehicle.current_mileage:
@@ -118,8 +134,17 @@ def update(id):
         record.notes = data.get('notes')
 
     # Handle new file attachments
+    # Validate total attachment count (existing + new)
+    total_attachments = len(record.attachments) + len(files)
+    if total_attachments > current_app.config['MAX_ATTACHMENTS_PER_LOG']:
+        return jsonify({'error': f"Maximum {current_app.config['MAX_ATTACHMENTS_PER_LOG']} attachments allowed"}), 400
+
     for file in files:
-        if file and file.filename and allowed_file(file.filename):
+        if file and file.filename and allowed_file(file.filename, current_app):
+            # Validate file size
+            if not validate_file_size(file, current_app):
+                return jsonify({'error': f"File {file.filename} exceeds maximum size of {current_app.config['MAX_ATTACHMENT_SIZE'] / (1024*1024)}MB"}), 400
+
             filename = secure_filename(file.filename)
             timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
             unique_filename = f"{timestamp}_{filename}"
@@ -134,6 +159,8 @@ def update(id):
                 general_maintenance_id=record.id
             )
             db.session.add(attachment)
+        elif file and file.filename:
+            return jsonify({'error': f"File type not allowed for {file.filename}"}), 400
 
     db.session.commit()
 

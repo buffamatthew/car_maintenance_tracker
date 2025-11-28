@@ -10,4 +10,9 @@ class Config:
         'sqlite:///' + os.path.join(basedir, 'car_maintenance.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     UPLOAD_FOLDER = os.path.join(basedir, 'uploads')
-    MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB max file size
+    MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB max request size
+
+    # File attachment settings
+    MAX_ATTACHMENTS_PER_LOG = 5
+    MAX_ATTACHMENT_SIZE = 16 * 1024 * 1024  # 16MB per file
+    ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'pdf', 'gif', 'doc', 'docx', 'txt', 'csv', 'xlsx', 'heic'}

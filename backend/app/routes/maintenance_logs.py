@@ -7,10 +7,15 @@ import os
 
 bp = Blueprint('maintenance_logs', __name__, url_prefix='/api/maintenance-logs')
 
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'pdf'}
-
 def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in current_app.config['ALLOWED_EXTENSIONS']
+
+def validate_file_size(file):
+    """Check if file size is within limit"""
+    file.seek(0, os.SEEK_END)
+    size = file.tell()
+    file.seek(0)
+    return size <= current_app.config['MAX_ATTACHMENT_SIZE']
 
 @bp.route('', methods=['GET'])
 def get_maintenance_logs():
@@ -68,8 +73,17 @@ def create_maintenance_log():
 
     # Handle multiple file attachments
     files = request.files.getlist('attachments')
+
+    # Validate attachment count
+    if len(files) > current_app.config['MAX_ATTACHMENTS_PER_LOG']:
+        return jsonify({'error': f"Maximum {current_app.config['MAX_ATTACHMENTS_PER_LOG']} attachments allowed"}), 400
+
     for file in files:
         if file and file.filename and allowed_file(file.filename):
+            # Validate file size
+            if not validate_file_size(file):
+                return jsonify({'error': f"File {file.filename} exceeds maximum size of {current_app.config['MAX_ATTACHMENT_SIZE'] / (1024*1024)}MB"}), 400
+
             filename = secure_filename(file.filename)
             timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
             unique_filename = f"{timestamp}_{filename}"
@@ -85,6 +99,8 @@ def create_maintenance_log():
                 maintenance_log_id=log.id
             )
             db.session.add(attachment)
+        elif file and file.filename:
+            return jsonify({'error': f"File type not allowed for {file.filename}"}), 400
 
     # Update vehicle mileage if provided and higher than current
     if log.mileage:
@@ -121,8 +137,18 @@ def update_maintenance_log(log_id):
 
     # Handle new file attachments
     files = request.files.getlist('attachments')
+
+    # Validate total attachment count (existing + new)
+    total_attachments = len(log.attachments) + len(files)
+    if total_attachments > current_app.config['MAX_ATTACHMENTS_PER_LOG']:
+        return jsonify({'error': f"Maximum {current_app.config['MAX_ATTACHMENTS_PER_LOG']} attachments allowed per log"}), 400
+
     for file in files:
         if file and file.filename and allowed_file(file.filename):
+            # Validate file size
+            if not validate_file_size(file):
+                return jsonify({'error': f"File {file.filename} exceeds maximum size of {current_app.config['MAX_ATTACHMENT_SIZE'] / (1024*1024)}MB"}), 400
+
             filename = secure_filename(file.filename)
             timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
             unique_filename = f"{timestamp}_{filename}"
@@ -137,6 +163,8 @@ def update_maintenance_log(log_id):
                 maintenance_log_id=log.id
             )
             db.session.add(attachment)
+        elif file and file.filename:
+            return jsonify({'error': f"File type not allowed for {file.filename}"}), 400
 
     # Handle receipt removal
     if data.get('remove_receipt'):

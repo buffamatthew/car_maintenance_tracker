@@ -8,6 +8,8 @@ import AddMaintenanceItem from './pages/AddMaintenanceItem'
 import EditMaintenanceItem from './pages/EditMaintenanceItem'
 import MaintenanceLog from './pages/MaintenanceLog'
 import MaintenanceHistory from './pages/MaintenanceHistory'
+import GeneralMaintenance from './pages/GeneralMaintenance'
+import GeneralMaintenanceHistory from './pages/GeneralMaintenanceHistory'
 import './App.css'
 
 function App() {
@@ -27,6 +29,8 @@ function App() {
             <Route path="/vehicle/:vehicleId/item/:itemId/edit" element={<EditMaintenanceItem />} />
             <Route path="/vehicle/:vehicleId/item/:itemId/history" element={<MaintenanceHistory />} />
             <Route path="/maintenance-log" element={<MaintenanceLog />} />
+            <Route path="/general-maintenance" element={<GeneralMaintenance />} />
+            <Route path="/vehicle/:vehicleId/general-maintenance" element={<GeneralMaintenanceHistory />} />
           </Routes>
         </main>
       </div>

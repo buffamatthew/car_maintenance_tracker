@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import Button from '../components/Button'
 import ProgressBar from '../components/ProgressBar'
 import CircularProgress from '../components/CircularProgress'
-import { vehicleAPI, maintenanceItemAPI, maintenanceLogAPI } from '../services/api'
+import { vehicleAPI, maintenanceItemAPI, maintenanceLogAPI, generalMaintenanceAPI } from '../services/api'
 import './VehicleDetail.css'
 
 function VehicleDetail() {
@@ -11,6 +11,7 @@ function VehicleDetail() {
   const navigate = useNavigate()
   const [vehicle, setVehicle] = useState(null)
   const [maintenanceItems, setMaintenanceItems] = useState([])
+  const [generalMaintenanceRecords, setGeneralMaintenanceRecords] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
@@ -42,6 +43,12 @@ function VehicleDetail() {
       )
 
       setMaintenanceItems(itemsWithLogs)
+
+      // Load general maintenance records
+      const generalMaintenanceResponse = await generalMaintenanceAPI.getAll(id)
+      setGeneralMaintenanceRecords(generalMaintenanceResponse.data.sort((a, b) =>
+        new Date(b.date_performed) - new Date(a.date_performed)
+      ))
     } catch (err) {
       setError('Failed to load vehicle details')
       console.error('Error loading vehicle:', err)
@@ -342,6 +349,64 @@ function VehicleDetail() {
                 </div>
               )
             })}
+          </div>
+        )}
+      </div>
+
+      <div className="general-maintenance-section">
+        <div className="section-header">
+          <h3>General Maintenance</h3>
+          <div className="section-actions">
+            <Button onClick={() => navigate('/general-maintenance', { state: { vehicleId: vehicle.id } })}>
+              + Log General Maintenance
+            </Button>
+            {generalMaintenanceRecords.length > 0 && (
+              <Button variant="outline" onClick={() => navigate(`/vehicle/${vehicle.id}/general-maintenance`)}>
+                View All ({generalMaintenanceRecords.length})
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {generalMaintenanceRecords.length === 0 ? (
+          <div className="empty-state">
+            <p>No general maintenance records yet.</p>
+            <p className="empty-hint">Log one-off repairs, services, or modifications here!</p>
+          </div>
+        ) : (
+          <div className="general-maintenance-preview">
+            {generalMaintenanceRecords.slice(0, 3).map((record) => (
+              <div key={record.id} className="general-maintenance-item">
+                <div className="gm-header">
+                  <h4>{record.title}</h4>
+                  <span className="gm-date">
+                    {new Date(record.date_performed).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric'
+                    })}
+                  </span>
+                </div>
+                <div className="gm-details">
+                  {record.mileage && (
+                    <span className="gm-mileage">{record.mileage.toLocaleString()} miles</span>
+                  )}
+                  {record.cost && (
+                    <span className="gm-cost">${parseFloat(record.cost).toFixed(2)}</span>
+                  )}
+                </div>
+                {record.notes && (
+                  <p className="gm-notes">{record.notes}</p>
+                )}
+              </div>
+            ))}
+            {generalMaintenanceRecords.length > 3 && (
+              <div className="see-more">
+                <Button variant="outline" onClick={() => navigate(`/vehicle/${vehicle.id}/general-maintenance`)}>
+                  See All {generalMaintenanceRecords.length} Records
+                </Button>
+              </div>
+            )}
           </div>
         )}
       </div>

@@ -43,7 +43,23 @@ export const maintenanceLogAPI = {
       return api.put(`/maintenance-logs/${id}`, data)
     }
   },
-  delete: (id) => api.delete(`/maintenance-logs/${id}`)
+  delete: (id) => api.delete(`/maintenance-logs/${id}`),
+  deleteAttachment: (id) => api.delete(`/maintenance-logs/attachments/${id}`)
+}
+
+export const generalMaintenanceAPI = {
+  getAll: (vehicleId) => api.get(`/general-maintenance`, { params: { vehicle_id: vehicleId } }),
+  getById: (id) => api.get(`/general-maintenance/${id}`),
+  create: (data) => axios.post(`${API_BASE_URL}/general-maintenance`, data),
+  update: (id, data) => {
+    if (data instanceof FormData) {
+      return axios.put(`${API_BASE_URL}/general-maintenance/${id}`, data)
+    } else {
+      return api.put(`/general-maintenance/${id}`, data)
+    }
+  },
+  delete: (id) => api.delete(`/general-maintenance/${id}`),
+  deleteAttachment: (id) => api.delete(`/general-maintenance/attachments/${id}`)
 }
 
 export default api

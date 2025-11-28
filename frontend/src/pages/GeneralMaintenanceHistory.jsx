@@ -3,88 +3,74 @@ import { useParams, useNavigate } from 'react-router-dom'
 import Button from '../components/Button'
 import AttachmentDisplay from '../components/AttachmentDisplay'
 import FileUpload from '../components/FileUpload'
-import { vehicleAPI, maintenanceItemAPI, maintenanceLogAPI } from '../services/api'
-import './MaintenanceHistory.css'
+import { vehicleAPI, generalMaintenanceAPI } from '../services/api'
+import './GeneralMaintenanceHistory.css'
 
-function MaintenanceHistory() {
-  const { vehicleId, itemId } = useParams()
+function GeneralMaintenanceHistory() {
+  const { vehicleId } = useParams()
   const navigate = useNavigate()
 
   const [vehicle, setVehicle] = useState(null)
-  const [maintenanceItem, setMaintenanceItem] = useState(null)
-  const [logs, setLogs] = useState([])
+  const [records, setRecords] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [editingLogId, setEditingLogId] = useState(null)
+  const [editingRecordId, setEditingRecordId] = useState(null)
   const [editFormData, setEditFormData] = useState({
+    title: '',
     date_performed: '',
     mileage: '',
     cost: '',
-    notes: '',
-    receipt_photo: null,
-    remove_receipt: false
+    notes: ''
   })
   const [newAttachments, setNewAttachments] = useState([])
 
   useEffect(() => {
     loadData()
-  }, [vehicleId, itemId])
+  }, [vehicleId])
 
   const loadData = async () => {
     try {
       setLoading(true)
 
-      // Load vehicle, maintenance item, and logs
-      const [vehicleRes, itemRes, logsRes] = await Promise.all([
+      // Load vehicle and general maintenance records
+      const [vehicleRes, recordsRes] = await Promise.all([
         vehicleAPI.getById(vehicleId),
-        maintenanceItemAPI.getById(itemId),
-        maintenanceLogAPI.getAll(itemId)
+        generalMaintenanceAPI.getAll(vehicleId)
       ])
 
       setVehicle(vehicleRes.data)
-      setMaintenanceItem(itemRes.data)
-      setLogs(logsRes.data.sort((a, b) =>
+      setRecords(recordsRes.data.sort((a, b) =>
         new Date(b.date_performed) - new Date(a.date_performed)
       ))
     } catch (err) {
-      setError('Failed to load maintenance history')
+      setError('Failed to load general maintenance history')
       console.error('Error loading data:', err)
     } finally {
       setLoading(false)
     }
   }
 
-  const handleEdit = (log) => {
-    setEditingLogId(log.id)
+  const handleEdit = (record) => {
+    setEditingRecordId(record.id)
     setEditFormData({
-      date_performed: log.date_performed,
-      mileage: log.mileage || '',
-      cost: log.cost || '',
-      notes: log.notes || '',
-      receipt_photo: null,
-      remove_receipt: false
+      title: record.title,
+      date_performed: record.date_performed,
+      mileage: record.mileage || '',
+      cost: record.cost || '',
+      notes: record.notes || ''
     })
   }
 
   const handleCancelEdit = () => {
-    setEditingLogId(null)
+    setEditingRecordId(null)
     setEditFormData({
+      title: '',
       date_performed: '',
       mileage: '',
       cost: '',
-      notes: '',
-      receipt_photo: null,
-      remove_receipt: false
+      notes: ''
     })
     setNewAttachments([])
-  }
-
-  const handleRemoveReceipt = () => {
-    setEditFormData(prev => ({
-      ...prev,
-      receipt_photo: null,
-      remove_receipt: true
-    }))
   }
 
   const handleEditFormChange = (e) => {
@@ -92,14 +78,6 @@ function MaintenanceHistory() {
     setEditFormData(prev => ({
       ...prev,
       [name]: value
-    }))
-  }
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0]
-    setEditFormData(prev => ({
-      ...prev,
-      receipt_photo: file
     }))
   }
 
@@ -113,7 +91,7 @@ function MaintenanceHistory() {
     }
 
     try {
-      await maintenanceLogAPI.deleteAttachment(attachmentId)
+      await generalMaintenanceAPI.deleteAttachment(attachmentId)
       // Reload data to refresh the attachments
       loadData()
     } catch (err) {
@@ -122,13 +100,14 @@ function MaintenanceHistory() {
     }
   }
 
-  const handleSaveEdit = async (logId) => {
+  const handleSaveEdit = async (recordId) => {
     try {
       // Only use FormData if there's a file to upload, otherwise use JSON
       let submitData
-      if (editFormData.receipt_photo || newAttachments.length > 0) {
+      if (newAttachments.length > 0) {
         // Has file - use FormData
         submitData = new FormData()
+        submitData.append('title', editFormData.title)
         submitData.append('date_performed', editFormData.date_performed)
         if (editFormData.mileage) {
           submitData.append('mileage', editFormData.mileage)
@@ -139,9 +118,6 @@ function MaintenanceHistory() {
         if (editFormData.notes) {
           submitData.append('notes', editFormData.notes)
         }
-        if (editFormData.receipt_photo) {
-          submitData.append('receipt_photo', editFormData.receipt_photo)
-        }
         // Add new attachments
         newAttachments.forEach(file => {
           submitData.append('attachments', file)
@@ -149,45 +125,44 @@ function MaintenanceHistory() {
       } else {
         // No file - use JSON
         submitData = {
+          title: editFormData.title,
           date_performed: editFormData.date_performed,
           mileage: editFormData.mileage || null,
           cost: editFormData.cost || null,
-          notes: editFormData.notes || null,
-          remove_receipt: editFormData.remove_receipt
+          notes: editFormData.notes || null
         }
       }
 
-      const response = await maintenanceLogAPI.update(logId, submitData)
+      const response = await generalMaintenanceAPI.update(recordId, submitData)
 
-      // Update the log in the list
-      setLogs(logs.map(log => log.id === logId ? response.data : log))
-      setEditingLogId(null)
+      // Update the record in the list
+      setRecords(records.map(record => record.id === recordId ? response.data : record))
+      setEditingRecordId(null)
       setEditFormData({
+        title: '',
         date_performed: '',
         mileage: '',
         cost: '',
-        notes: '',
-        receipt_photo: null,
-        remove_receipt: false
+        notes: ''
       })
       setNewAttachments([])
     } catch (err) {
-      setError('Failed to update log')
-      console.error('Error updating log:', err)
+      setError('Failed to update record')
+      console.error('Error updating record:', err)
     }
   }
 
-  const handleDelete = async (logId) => {
-    if (!window.confirm('Are you sure you want to delete this maintenance log?')) {
+  const handleDelete = async (recordId) => {
+    if (!window.confirm('Are you sure you want to delete this general maintenance record?')) {
       return
     }
 
     try {
-      await maintenanceLogAPI.delete(logId)
-      setLogs(logs.filter(log => log.id !== logId))
+      await generalMaintenanceAPI.delete(recordId)
+      setRecords(records.filter(record => record.id !== recordId))
     } catch (err) {
-      setError('Failed to delete log')
-      console.error('Error deleting log:', err)
+      setError('Failed to delete record')
+      console.error('Error deleting record:', err)
     }
   }
 
@@ -204,9 +179,9 @@ function MaintenanceHistory() {
     return <div className="loading">Loading history...</div>
   }
 
-  if (error || !vehicle || !maintenanceItem) {
+  if (error || !vehicle) {
     return (
-      <div className="maintenance-history-page">
+      <div className="general-maintenance-history-page">
         <div className="error-alert">{error || 'Data not found'}</div>
         <Button onClick={() => navigate(`/vehicle/${vehicleId}`)}>
           Back to Vehicle
@@ -216,21 +191,18 @@ function MaintenanceHistory() {
   }
 
   return (
-    <div className="maintenance-history-page">
+    <div className="general-maintenance-history-page">
       <div className="page-header">
         <div>
-          <h2>{maintenanceItem.name} History</h2>
+          <h2>General Maintenance History</h2>
           <p className="vehicle-name">
             {vehicle.year} {vehicle.make} {vehicle.model}
-          </p>
-          <p className="frequency-info">
-            Frequency: Every {maintenanceItem.frequency_value} {maintenanceItem.frequency_unit}
           </p>
         </div>
         <div className="header-actions">
           <Button
-            onClick={() => navigate('/maintenance-log', {
-              state: { vehicleId: vehicle.id, itemId: maintenanceItem.id }
+            onClick={() => navigate('/general-maintenance', {
+              state: { vehicleId: vehicle.id }
             })}
           >
             + Log New
@@ -244,29 +216,40 @@ function MaintenanceHistory() {
         </div>
       </div>
 
-      {logs.length === 0 ? (
+      {records.length === 0 ? (
         <div className="empty-state">
-          <h3>No maintenance logged yet</h3>
-          <p>This maintenance item has never been performed.</p>
+          <h3>No general maintenance logged yet</h3>
+          <p>Add one-off repairs, services, or modifications here.</p>
           <Button
-            onClick={() => navigate('/maintenance-log', {
-              state: { vehicleId: vehicle.id, itemId: maintenanceItem.id }
+            onClick={() => navigate('/general-maintenance', {
+              state: { vehicleId: vehicle.id }
             })}
           >
-            Log First Maintenance
+            Log First Record
           </Button>
         </div>
       ) : (
-        <div className="logs-list">
-          <div className="logs-summary">
-            <h3>Maintenance History ({logs.length} {logs.length === 1 ? 'entry' : 'entries'})</h3>
+        <div className="records-list">
+          <div className="records-summary">
+            <h3>Maintenance History ({records.length} {records.length === 1 ? 'record' : 'records'})</h3>
           </div>
 
-          {logs.map((log) => (
-            <div key={log.id} className="log-card">
-              {editingLogId === log.id ? (
+          {records.map((record) => (
+            <div key={record.id} className="record-card">
+              {editingRecordId === record.id ? (
                 // Edit mode
-                <div className="log-edit-form">
+                <div className="record-edit-form">
+                  <div className="form-group">
+                    <label>Title</label>
+                    <input
+                      type="text"
+                      name="title"
+                      value={editFormData.title}
+                      onChange={handleEditFormChange}
+                      required
+                    />
+                  </div>
+
                   <div className="form-group">
                     <label>Date Performed</label>
                     <input
@@ -313,25 +296,12 @@ function MaintenanceHistory() {
                     />
                   </div>
 
-                  {log.attachments && log.attachments.length > 0 && (
+                  {record.attachments && record.attachments.length > 0 && (
                     <AttachmentDisplay
-                      attachments={log.attachments}
+                      attachments={record.attachments}
                       onDelete={handleDeleteAttachment}
                       showDelete={true}
                     />
-                  )}
-
-                  {log.receipt_photo && (
-                    <div className="legacy-receipt-notice">
-                      <span>Legacy receipt: {log.receipt_photo}</span>
-                      <Button
-                        variant="danger"
-                        onClick={handleRemoveReceipt}
-                        type="button"
-                      >
-                        Remove
-                      </Button>
-                    </div>
                   )}
 
                   <FileUpload
@@ -341,10 +311,10 @@ function MaintenanceHistory() {
                     label="Add More Attachments"
                   />
 
-                  <div className="log-actions">
+                  <div className="record-actions">
                     <Button
                       variant="primary"
-                      onClick={() => handleSaveEdit(log.id)}
+                      onClick={() => handleSaveEdit(record.id)}
                     >
                       Save
                     </Button>
@@ -359,76 +329,50 @@ function MaintenanceHistory() {
               ) : (
                 // View mode
                 <>
-                  <div className="log-header">
-                    <div className="log-date">
+                  <div className="record-header">
+                    <h3 className="record-title">{record.title}</h3>
+                    <div className="record-date">
                       <span className="date-label">Date:</span>
-                      <span className="date-value">{formatDate(log.date_performed)}</span>
+                      <span className="date-value">{formatDate(record.date_performed)}</span>
                     </div>
-                    {log.mileage && (
-                      <div className="log-mileage">
-                        <span className="mileage-value">{log.mileage.toLocaleString()}</span>
+                  </div>
+
+                  <div className="record-details">
+                    {record.mileage && (
+                      <div className="record-mileage">
+                        <span className="mileage-value">{record.mileage.toLocaleString()}</span>
                         <span className="mileage-unit">miles</span>
                       </div>
                     )}
-                    {log.cost && (
-                      <div className="log-cost">
+                    {record.cost && (
+                      <div className="record-cost">
                         <span className="cost-label">Cost:</span>
-                        <span className="cost-value">${parseFloat(log.cost).toFixed(2)}</span>
+                        <span className="cost-value">${parseFloat(record.cost).toFixed(2)}</span>
                       </div>
                     )}
                   </div>
 
-                  {log.notes && (
-                    <div className="log-notes">
+                  {record.notes && (
+                    <div className="record-notes">
                       <span className="notes-label">Notes:</span>
-                      <p>{log.notes}</p>
+                      <p>{record.notes}</p>
                     </div>
                   )}
 
-                  {log.attachments && log.attachments.length > 0 && (
-                    <AttachmentDisplay attachments={log.attachments} />
+                  {record.attachments && record.attachments.length > 0 && (
+                    <AttachmentDisplay attachments={record.attachments} />
                   )}
 
-                  {log.receipt_photo && (
-                    <div className="log-receipt legacy-receipt">
-                      <span className="receipt-label">Legacy Receipt:</span>
-                      <div className="receipt-preview">
-                        {log.receipt_photo.toLowerCase().endsWith('.pdf') ? (
-                          <a
-                            href={`http://localhost:5001/uploads/${log.receipt_photo}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="receipt-link"
-                          >
-                            📄 View PDF Receipt
-                          </a>
-                        ) : (
-                          <a
-                            href={`http://localhost:5001/uploads/${log.receipt_photo}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <img
-                              src={`http://localhost:5001/uploads/${log.receipt_photo}`}
-                              alt="Receipt"
-                              className="receipt-image"
-                            />
-                          </a>
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="log-actions">
+                  <div className="record-actions">
                     <Button
                       variant="outline"
-                      onClick={() => handleEdit(log)}
+                      onClick={() => handleEdit(record)}
                     >
                       Edit
                     </Button>
                     <Button
                       variant="danger"
-                      onClick={() => handleDelete(log.id)}
+                      onClick={() => handleDelete(record.id)}
                     >
                       Delete
                     </Button>
@@ -443,4 +387,4 @@ function MaintenanceHistory() {
   )
 }
 
-export default MaintenanceHistory
+export default GeneralMaintenanceHistory
