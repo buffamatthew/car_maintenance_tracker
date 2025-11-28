@@ -16,7 +16,7 @@ function GeneralMaintenanceHistory() {
   const [error, setError] = useState(null)
   const [editingRecordId, setEditingRecordId] = useState(null)
   const [editFormData, setEditFormData] = useState({
-    title: '',
+    description: '',
     date_performed: '',
     mileage: '',
     cost: '',
@@ -53,7 +53,7 @@ function GeneralMaintenanceHistory() {
   const handleEdit = (record) => {
     setEditingRecordId(record.id)
     setEditFormData({
-      title: record.title,
+      description: record.description,
       date_performed: record.date_performed,
       mileage: record.mileage || '',
       cost: record.cost || '',
@@ -64,7 +64,7 @@ function GeneralMaintenanceHistory() {
   const handleCancelEdit = () => {
     setEditingRecordId(null)
     setEditFormData({
-      title: '',
+      description: '',
       date_performed: '',
       mileage: '',
       cost: '',
@@ -107,7 +107,7 @@ function GeneralMaintenanceHistory() {
       if (newAttachments.length > 0) {
         // Has file - use FormData
         submitData = new FormData()
-        submitData.append('title', editFormData.title)
+        submitData.append('description', editFormData.description)
         submitData.append('date_performed', editFormData.date_performed)
         if (editFormData.mileage) {
           submitData.append('mileage', editFormData.mileage)
@@ -125,7 +125,7 @@ function GeneralMaintenanceHistory() {
       } else {
         // No file - use JSON
         submitData = {
-          title: editFormData.title,
+          description: editFormData.description,
           date_performed: editFormData.date_performed,
           mileage: editFormData.mileage || null,
           cost: editFormData.cost || null,
@@ -139,7 +139,7 @@ function GeneralMaintenanceHistory() {
       setRecords(records.map(record => record.id === recordId ? response.data : record))
       setEditingRecordId(null)
       setEditFormData({
-        title: '',
+        description: '',
         date_performed: '',
         mileage: '',
         cost: '',
@@ -243,8 +243,8 @@ function GeneralMaintenanceHistory() {
                     <label>Title</label>
                     <input
                       type="text"
-                      name="title"
-                      value={editFormData.title}
+                      name="description"
+                      value={editFormData.description}
                       onChange={handleEditFormChange}
                       required
                     />
@@ -330,7 +330,7 @@ function GeneralMaintenanceHistory() {
                 // View mode
                 <>
                   <div className="record-header">
-                    <h3 className="record-title">{record.title}</h3>
+                    <h3 className="record-title">{record.description}</h3>
                     <div className="record-date">
                       <span className="date-label">Date:</span>
                       <span className="date-value">{formatDate(record.date_performed)}</span>

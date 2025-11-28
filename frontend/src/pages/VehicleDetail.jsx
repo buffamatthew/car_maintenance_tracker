@@ -378,7 +378,7 @@ function VehicleDetail() {
             {generalMaintenanceRecords.slice(0, 3).map((record) => (
               <div key={record.id} className="general-maintenance-item">
                 <div className="gm-header">
-                  <h4>{record.title}</h4>
+                  <h4>{record.description}</h4>
                   <span className="gm-date">
                     {new Date(record.date_performed).toLocaleDateString('en-US', {
                       year: 'numeric',

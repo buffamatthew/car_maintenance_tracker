@@ -23,7 +23,7 @@ function GeneralMaintenance() {
 
   const [formData, setFormData] = useState({
     vehicle_id: preSelectedVehicleId || '',
-    title: '',
+    description: '',
     date_performed: new Date().toISOString().split('T')[0],
     mileage: '',
     cost: '',
@@ -92,7 +92,7 @@ function GeneralMaintenance() {
       // Create FormData for file upload
       const submitData = new FormData()
       submitData.append('vehicle_id', formData.vehicle_id)
-      submitData.append('title', formData.title)
+      submitData.append('description', formData.description)
       submitData.append('date_performed', formData.date_performed)
       submitData.append('mileage', formData.mileage)
       if (formData.cost) {
@@ -180,9 +180,9 @@ function GeneralMaintenance() {
 
               <Input
                 label="Title"
-                name="title"
+                name="description"
                 type="text"
-                value={formData.title}
+                value={formData.description}
                 onChange={handleChange}
                 placeholder="e.g., AC Repair, Body Work, Tire Replacement"
                 required
