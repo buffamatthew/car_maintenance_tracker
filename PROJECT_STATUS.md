@@ -1,6 +1,6 @@
 # Car Maintenance Tracker - Project Status
 
-**Last Updated:** 2025-11-28 (Phase 6.5 Complete)
+**Last Updated:** 2025-11-28 (Phase 7 Complete)
 
 ## Project Overview
 
@@ -145,13 +145,34 @@ A Docker-based web application for tracking vehicle maintenance, accessible on m
 - File cleanup when receipts replaced or removed
 - Empty state when no logs exist
 
+#### Phase 7: Edit Vehicle & Items (COMPLETE)
+- [x] Edit vehicle information (year, make, model, engine, mileage)
+- [x] EditVehicle page with form validation
+- [x] Add new maintenance items to existing vehicles
+- [x] AddMaintenanceItem page with direct save (no preview step)
+- [x] Edit existing maintenance items (frequency, notes)
+- [x] EditMaintenanceItem page
+- [x] Delete maintenance items with confirmation
+- [x] Delete vehicles with "danger zone" UI pattern
+- [x] Navigation from VehicleDetail to all edit pages
+- [x] Routes: `/vehicle/:id/edit`, `/vehicle/:vehicleId/add-item`, `/vehicle/:vehicleId/item/:itemId/edit`
+
+**Files:**
+- Pages: `frontend/src/pages/EditVehicle.jsx`, `AddMaintenanceItem.jsx`, `EditMaintenanceItem.jsx` + CSS files
+- Updated: `frontend/src/pages/VehicleDetail.jsx` (added Edit/Delete buttons, danger zone)
+- Routes: Updated `frontend/src/App.jsx` with all edit routes
+
+**Bug Fixes:**
+- Fixed prop name mismatch: MaintenanceItemForm expects `onAdd`, not `onItemAdded`
+- Simplified AddMaintenanceItem flow: removed unnecessary preview step
+
 ### 🚧 In Progress
 
-None currently - Phase 6.5 just completed!
+Phase 5: Dashboard Visualizations - Starting now!
 
 ### 📋 Planned Phases
 
-#### Phase 5: Dashboard Visualizations (OPTIONAL)
+#### Phase 5: Dashboard Visualizations (IN PROGRESS)
 - [ ] Gauge/chart components for individual maintenance items
 - [ ] Visual representation of maintenance status
 - [ ] Overview display for all vehicles on main dashboard
@@ -173,13 +194,6 @@ None currently - Phase 6.5 just completed!
 - Tire purchases (not rotations)
 - Windshield replacement
 - Any non-recurring service work
-
-#### Phase 7: Edit Vehicle & Items (RECOMMENDED)
-- [ ] Edit vehicle information (year, make, model, engine, mileage)
-- [ ] Add new maintenance items to existing vehicles
-- [ ] Edit existing maintenance items (frequency, notes)
-- [ ] Delete maintenance items
-- [ ] Delete vehicles
 
 #### Phase 8: Settings & User Management (Basic)
 - [ ] User authentication (login/register)

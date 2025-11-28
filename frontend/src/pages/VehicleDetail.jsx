@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import Button from '../components/Button'
+import ProgressBar from '../components/ProgressBar'
+import CircularProgress from '../components/CircularProgress'
 import { vehicleAPI, maintenanceItemAPI, maintenanceLogAPI } from '../services/api'
 import './VehicleDetail.css'
 
@@ -48,13 +50,43 @@ function VehicleDetail() {
     }
   }
 
+  const handleDeleteVehicle = async () => {
+    if (!window.confirm(`Are you sure you want to delete this vehicle? This will also delete all maintenance items and logs for this vehicle.`)) {
+      return
+    }
+
+    try {
+      await vehicleAPI.delete(id)
+      navigate('/')
+    } catch (err) {
+      setError('Failed to delete vehicle')
+      console.error('Error deleting vehicle:', err)
+    }
+  }
+
+  const handleDeleteItem = async (itemId, itemName) => {
+    if (!window.confirm(`Are you sure you want to delete "${itemName}"? This will also delete all logs for this maintenance item.`)) {
+      return
+    }
+
+    try {
+      await maintenanceItemAPI.delete(itemId)
+      // Remove from local state
+      setMaintenanceItems(maintenanceItems.filter(item => item.id !== itemId))
+    } catch (err) {
+      setError('Failed to delete maintenance item')
+      console.error('Error deleting maintenance item:', err)
+    }
+  }
+
   const getMaintenanceStatus = (item) => {
     if (!item.logs || item.logs.length === 0) {
       return {
         status: 'never',
         message: 'Never performed',
         daysRemaining: null,
-        milesRemaining: null
+        milesRemaining: null,
+        percentageRemaining: 0
       }
     }
 
@@ -69,6 +101,7 @@ function VehicleDetail() {
       const lastMileage = lastLog.mileage || 0
       const nextMileage = lastMileage + item.frequency_value
       const milesRemaining = nextMileage - vehicle.current_mileage
+      const percentageRemaining = Math.max(0, (milesRemaining / item.frequency_value) * 100)
 
       let status = 'good'
       if (milesRemaining <= 0) {
@@ -81,7 +114,8 @@ function VehicleDetail() {
         status,
         message: `${milesRemaining > 0 ? milesRemaining : 0} miles remaining`,
         milesRemaining,
-        nextMileage
+        nextMileage,
+        percentageRemaining
       }
     } else {
       // Calculate days remaining
@@ -98,6 +132,7 @@ function VehicleDetail() {
       }
 
       const daysRemaining = frequencyInDays - daysSinceLast
+      const percentageRemaining = Math.max(0, (daysRemaining / frequencyInDays) * 100)
 
       let status = 'good'
       if (daysRemaining <= 0) {
@@ -110,7 +145,8 @@ function VehicleDetail() {
         status,
         message: daysRemaining > 0 ? `${daysRemaining} days remaining` : 'Overdue',
         daysRemaining,
-        nextDate: new Date(lastDate.getTime() + frequencyInDays * 24 * 60 * 60 * 1000)
+        nextDate: new Date(lastDate.getTime() + frequencyInDays * 24 * 60 * 60 * 1000),
+        percentageRemaining
       }
     }
   }
@@ -169,6 +205,9 @@ function VehicleDetail() {
           {vehicle.engine_type && <p className="engine-type">{vehicle.engine_type}</p>}
         </div>
         <div className="header-actions">
+          <Button onClick={() => navigate(`/vehicle/${id}/edit`)}>
+            Edit Vehicle
+          </Button>
           <Button variant="outline" onClick={() => navigate('/')}>
             Back to Dashboard
           </Button>
@@ -201,15 +240,20 @@ function VehicleDetail() {
       <div className="maintenance-section">
         <div className="section-header">
           <h3>Maintenance Items</h3>
-          <Button onClick={() => navigate('/maintenance-log', { state: { vehicleId: vehicle.id } })}>
-            + Log Maintenance
-          </Button>
+          <div className="section-actions">
+            <Button variant="outline" onClick={() => navigate(`/vehicle/${vehicle.id}/add-item`)}>
+              + Add Item
+            </Button>
+            <Button onClick={() => navigate('/maintenance-log', { state: { vehicleId: vehicle.id } })}>
+              + Log Maintenance
+            </Button>
+          </div>
         </div>
 
         {maintenanceItems.length === 0 ? (
           <div className="empty-state">
             <p>No maintenance items configured for this vehicle.</p>
-            <p className="empty-hint">Edit vehicle functionality coming soon!</p>
+            <p className="empty-hint">Click "+ Add Item" to get started!</p>
           </div>
         ) : (
           <div className="maintenance-items">
@@ -218,16 +262,31 @@ function VehicleDetail() {
               return (
                 <div key={item.id} className={`maintenance-card ${getStatusColor(status.status)}`}>
                   <div className="card-header">
-                    <h4>{item.name}</h4>
-                    <span className={`status-badge ${getStatusColor(status.status)}`}>
-                      {status.status === 'never' && 'Not Done'}
-                      {status.status === 'good' && 'Good'}
-                      {status.status === 'due-soon' && 'Due Soon'}
-                      {status.status === 'overdue' && 'Overdue'}
-                    </span>
+                    <div className="card-header-left">
+                      <h4>{item.name}</h4>
+                      <span className={`status-badge ${getStatusColor(status.status)}`}>
+                        {status.status === 'never' && 'Not Done'}
+                        {status.status === 'good' && 'Good'}
+                        {status.status === 'due-soon' && 'Due Soon'}
+                        {status.status === 'overdue' && 'Overdue'}
+                      </span>
+                    </div>
+                    <CircularProgress
+                      percentage={status.percentageRemaining}
+                      status={status.status}
+                      size={70}
+                      strokeWidth={6}
+                    />
                   </div>
 
                   <div className="card-body">
+                    <div className="progress-section">
+                      <ProgressBar
+                        percentage={status.percentageRemaining}
+                        status={status.status}
+                        showLabel={false}
+                      />
+                    </div>
                     <div className="info-row">
                       <span className="label">Frequency:</span>
                       <span>Every {item.frequency_value} {item.frequency_unit}</span>
@@ -249,26 +308,50 @@ function VehicleDetail() {
                   </div>
 
                   <div className="card-footer">
-                    <Button
-                      variant="outline"
-                      onClick={() => navigate(`/vehicle/${vehicle.id}/item/${item.id}/history`)}
-                    >
-                      View History
-                    </Button>
-                    <Button
-                      variant="primary"
-                      onClick={() => navigate('/maintenance-log', {
-                        state: { vehicleId: vehicle.id, itemId: item.id }
-                      })}
-                    >
-                      Log Maintenance
-                    </Button>
+                    <div className="card-footer-row">
+                      <Button
+                        variant="outline"
+                        onClick={() => navigate(`/vehicle/${vehicle.id}/item/${item.id}/history`)}
+                      >
+                        View History
+                      </Button>
+                      <Button
+                        variant="primary"
+                        onClick={() => navigate('/maintenance-log', {
+                          state: { vehicleId: vehicle.id, itemId: item.id }
+                        })}
+                      >
+                        Log Maintenance
+                      </Button>
+                    </div>
+                    <div className="card-footer-row">
+                      <Button
+                        variant="outline"
+                        onClick={() => navigate(`/vehicle/${vehicle.id}/item/${item.id}/edit`)}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        variant="danger"
+                        onClick={() => handleDeleteItem(item.id, item.name)}
+                      >
+                        Delete
+                      </Button>
+                    </div>
                   </div>
                 </div>
               )
             })}
           </div>
         )}
+      </div>
+
+      <div className="danger-zone">
+        <h3>Danger Zone</h3>
+        <p>Deleting this vehicle will also delete all associated maintenance items and logs. This action cannot be undone.</p>
+        <Button variant="danger" onClick={handleDeleteVehicle}>
+          Delete Vehicle
+        </Button>
       </div>
     </div>
   )

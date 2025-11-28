@@ -77,6 +77,11 @@
 .section-header h3 {
   margin: 0;
   color: #111827;
+}
+
+.section-actions {
+  display: flex;
+  gap: 0.75rem;
   font-size: 1.25rem;
 }
 
@@ -124,6 +129,12 @@
   border-bottom: 1px solid #e5e7eb;
 }
 
+.card-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
 .card-header h4 {
   margin: 0;
   color: #111827;
@@ -161,6 +172,12 @@
   margin-bottom: 1rem;
 }
 
+.progress-section {
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
 .info-row {
   display: flex;
   justify-content: space-between;
@@ -185,9 +202,15 @@
 
 .card-footer {
   display: flex;
+  flex-direction: column;
   gap: 0.75rem;
   padding-top: 1rem;
   border-top: 1px solid #e5e7eb;
+}
+
+.card-footer-row {
+  display: flex;
+  gap: 0.75rem;
 }
 
 .empty-state {
@@ -205,6 +228,26 @@
   font-size: 0.875rem;
   color: #9ca3af;
   font-style: italic;
+}
+
+.danger-zone {
+  margin-top: 3rem;
+  padding: 2rem;
+  background-color: #fef2f2;
+  border: 2px solid #fecaca;
+  border-radius: 8px;
+}
+
+.danger-zone h3 {
+  margin: 0 0 0.5rem 0;
+  color: #991b1b;
+  font-size: 1.125rem;
+}
+
+.danger-zone p {
+  margin: 0 0 1.5rem 0;
+  color: #7f1d1d;
+  font-size: 0.875rem;
 }
 
 @media (max-width: 768px) {
