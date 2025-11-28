@@ -33,6 +33,16 @@ export const maintenanceLogAPI = {
     // Don't set Content-Type - let axios set it automatically with boundary
     return api.post('/maintenance-logs', formData)
   },
+  update: (id, data) => {
+    // Check if data is FormData or regular object
+    if (data instanceof FormData) {
+      // Send as multipart/form-data - create new axios instance without JSON header
+      return axios.put(`${API_BASE_URL}/maintenance-logs/${id}`, data)
+    } else {
+      // Send as JSON
+      return api.put(`/maintenance-logs/${id}`, data)
+    }
+  },
   delete: (id) => api.delete(`/maintenance-logs/${id}`)
 }
 

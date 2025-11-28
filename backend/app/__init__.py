@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_cors import CORS
@@ -24,6 +24,11 @@ def create_app(config_class=Config):
     # Create upload folder if it doesn't exist
     import os
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
+    # Route to serve uploaded files
+    @app.route('/uploads/<filename>')
+    def uploaded_file(filename):
+        return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
     return app
 

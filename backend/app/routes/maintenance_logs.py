@@ -73,6 +73,63 @@ def create_maintenance_log():
 
     return jsonify(log.to_dict()), 201
 
+@bp.route('/<int:log_id>', methods=['PUT'])
+def update_maintenance_log(log_id):
+    log = MaintenanceLog.query.get_or_404(log_id)
+
+    # Use request.form for multipart/form-data, request.get_json() for application/json
+    data = request.form if request.form else request.get_json()
+
+    # Update date if provided
+    if 'date_performed' in data:
+        log.date_performed = datetime.fromisoformat(data['date_performed']).date()
+
+    # Update mileage if provided
+    if 'mileage' in data:
+        log.mileage = int(data.get('mileage')) if data.get('mileage') else None
+
+    # Update notes if provided
+    if 'notes' in data:
+        log.notes = data.get('notes')
+
+    # Handle receipt removal
+    if data.get('remove_receipt'):
+        if log.receipt_photo:
+            # Delete the file
+            filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], log.receipt_photo)
+            if os.path.exists(filepath):
+                os.remove(filepath)
+            log.receipt_photo = None
+
+    # Handle file upload (new receipt)
+    if 'receipt_photo' in request.files:
+        file = request.files['receipt_photo']
+        if file and file.filename and allowed_file(file.filename):
+            # Delete old file if exists
+            if log.receipt_photo:
+                old_filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], log.receipt_photo)
+                if os.path.exists(old_filepath):
+                    os.remove(old_filepath)
+
+            # Save new file
+            filename = secure_filename(file.filename)
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            filename = f"{timestamp}_{filename}"
+            filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
+            file.save(filepath)
+            log.receipt_photo = filename
+
+    # Update vehicle mileage if needed
+    if log.mileage:
+        item = MaintenanceItem.query.get(log.maintenance_item_id)
+        vehicle = Vehicle.query.get(item.vehicle_id)
+        if vehicle and log.mileage > vehicle.current_mileage:
+            vehicle.current_mileage = log.mileage
+
+    db.session.commit()
+
+    return jsonify(log.to_dict())
+
 @bp.route('/<int:log_id>', methods=['DELETE'])
 def delete_maintenance_log(log_id):
     log = MaintenanceLog.query.get_or_404(log_id)

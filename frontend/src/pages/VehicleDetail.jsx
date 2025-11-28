@@ -251,6 +251,12 @@ function VehicleDetail() {
                   <div className="card-footer">
                     <Button
                       variant="outline"
+                      onClick={() => navigate(`/vehicle/${vehicle.id}/item/${item.id}/history`)}
+                    >
+                      View History
+                    </Button>
+                    <Button
+                      variant="primary"
                       onClick={() => navigate('/maintenance-log', {
                         state: { vehicleId: vehicle.id, itemId: item.id }
                       })}

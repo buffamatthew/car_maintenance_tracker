@@ -4,6 +4,7 @@ import Dashboard from './pages/Dashboard'
 import AddVehicle from './pages/AddVehicle'
 import VehicleDetail from './pages/VehicleDetail'
 import MaintenanceLog from './pages/MaintenanceLog'
+import MaintenanceHistory from './pages/MaintenanceHistory'
 import './App.css'
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
             <Route path="/" element={<Dashboard />} />
             <Route path="/add-vehicle" element={<AddVehicle />} />
             <Route path="/vehicle/:id" element={<VehicleDetail />} />
+            <Route path="/vehicle/:vehicleId/item/:itemId/history" element={<MaintenanceHistory />} />
             <Route path="/maintenance-log" element={<MaintenanceLog />} />
           </Routes>
         </main>

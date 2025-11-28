@@ -1,0 +1,302 @@
+.maintenance-history-page {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+}
+
+.page-header h2 {
+  margin: 0 0 0.5rem 0;
+  color: #111827;
+}
+
+.vehicle-name {
+  margin: 0 0 0.25rem 0;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+.frequency-info {
+  margin: 0;
+  color: #9ca3af;
+  font-size: 0.875rem;
+  font-style: italic;
+}
+
+.header-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.empty-state {
+  background-color: white;
+  border-radius: 8px;
+  padding: 3rem 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.empty-state h3 {
+  margin: 0 0 1rem 0;
+  color: #111827;
+}
+
+.empty-state p {
+  margin: 0 0 2rem 0;
+  color: #6b7280;
+}
+
+.logs-list {
+  background-color: white;
+  border-radius: 8px;
+  padding: 2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.logs-summary {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.logs-summary h3 {
+  margin: 0;
+  color: #111827;
+  font-size: 1.125rem;
+}
+
+.log-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  transition: box-shadow 0.2s;
+}
+
+.log-card:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.log-card:last-child {
+  margin-bottom: 0;
+}
+
+.log-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.log-date {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.date-label {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.date-value {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.log-mileage {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.mileage-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2563eb;
+}
+
+.mileage-unit {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.log-notes {
+  margin-bottom: 1rem;
+}
+
+.notes-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.log-notes p {
+  margin: 0;
+  color: #4b5563;
+  line-height: 1.6;
+}
+
+.log-receipt {
+  margin-bottom: 1rem;
+}
+
+.receipt-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.receipt-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #2563eb;
+  text-decoration: none;
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+  background-color: #eff6ff;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+.receipt-link:hover {
+  background-color: #dbeafe;
+}
+
+.receipt-preview {
+  margin-top: 0.5rem;
+}
+
+.receipt-image {
+  max-width: 300px;
+  max-height: 200px;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
+  transition: transform 0.2s;
+  display: block;
+}
+
+.receipt-image:hover {
+  transform: scale(1.02);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.log-actions {
+  display: flex;
+  gap: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid #f3f4f6;
+}
+
+.log-edit-form {
+  width: 100%;
+}
+
+.log-edit-form .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.log-edit-form label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.log-edit-form input[type="date"],
+.log-edit-form input[type="number"],
+.log-edit-form input[type="file"],
+.log-edit-form textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-family: inherit;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.log-edit-form input[type="date"]:focus,
+.log-edit-form input[type="number"]:focus,
+.log-edit-form textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.log-edit-form textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.current-receipt-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem;
+  background-color: #f3f4f6;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+}
+
+.current-receipt-info span {
+  flex: 1;
+  font-size: 0.875rem;
+  color: #374151;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.receipt-removed-message {
+  padding: 0.75rem;
+  background-color: #fef3c7;
+  border: 1px solid #f59e0b;
+  border-radius: 6px;
+  color: #92400e;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .header-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .logs-list {
+    padding: 1.5rem;
+  }
+
+  .log-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .log-actions {
+    flex-direction: column;
+  }
+}
