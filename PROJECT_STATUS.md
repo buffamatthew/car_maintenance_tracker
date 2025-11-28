@@ -1,6 +1,6 @@
 # Car Maintenance Tracker - Project Status
 
-**Last Updated:** 2025-11-27 (Phase 4 Complete)
+**Last Updated:** 2025-11-27 (Phase 6 Complete)
 
 ## Project Overview
 
@@ -99,27 +99,40 @@ A Docker-based web application for tracking vehicle maintenance, accessible on m
 - Pages: `frontend/src/pages/VehicleDetail.jsx`, `frontend/src/pages/VehicleDetail.css`
 - Routes: Updated `frontend/src/App.jsx` with `/vehicle/:id` route
 
+#### Phase 6: Maintenance Log Feature (COMPLETE)
+- [x] Maintenance log form UI
+- [x] Select vehicle and maintenance item from dropdowns
+- [x] Log date, mileage, notes
+- [x] Photo receipt upload (JPG, PNG, PDF)
+- [x] Auto-update vehicle mileage (only if higher)
+- [x] Refresh vehicle detail page after logging
+- [x] Pre-select vehicle/item when navigating from detail page
+- [x] Allow logging historical maintenance
+- [x] Success confirmation and redirect
+
+**Files:**
+- Pages: `frontend/src/pages/MaintenanceLog.jsx`, `frontend/src/pages/MaintenanceLog.css`
+- Backend: Updated `backend/app/routes/maintenance_logs.py` (FormData handling, type conversion)
+- API: Updated `frontend/src/services/api.js` (FormData support)
+
+**Bug Fixes:**
+- Fixed FormData handling in Flask (check request.form, not request.files)
+- Fixed mileage type conversion (string to int)
+- Fixed axios Content-Type for multipart/form-data
+
 ### 🚧 In Progress
 
-None currently - Phase 4 just completed!
+None currently - Phase 6 just completed!
 
 ### 📋 Planned Phases
 
-#### Phase 5: Dashboard Visualizations (NEXT)
+#### Phase 5: Dashboard Visualizations (NEXT - OPTIONAL)
 - [ ] Gauge/chart components for individual maintenance items
 - [ ] Visual representation of maintenance status
 - [ ] Overview display for all vehicles on main dashboard
 - [ ] Enhanced color coding and progress bars
 
-#### Phase 6: Maintenance Log Feature (PRIORITY)
-- [ ] Maintenance log form UI
-- [ ] Select vehicle and maintenance item from dropdowns
-- [ ] Log date, mileage, notes
-- [ ] Photo receipt upload
-- [ ] Auto-update vehicle mileage
-- [ ] Refresh vehicle detail page after logging
-
-#### Phase 7: Edit Vehicle & Items
+#### Phase 7: Edit Vehicle & Items (NEXT - RECOMMENDED)
 - [ ] Edit vehicle information (year, make, model, engine, mileage)
 - [ ] Add new maintenance items to existing vehicles
 - [ ] Edit existing maintenance items (frequency, notes)
