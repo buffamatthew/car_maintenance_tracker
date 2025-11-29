@@ -10,6 +10,16 @@ echo "Car Maintenance Tracker - Deployment"
 echo "========================================="
 echo ""
 
+# Determine which docker compose command to use
+if command -v docker-compose &> /dev/null; then
+    DOCKER_COMPOSE="docker-compose"
+elif docker compose version &> /dev/null 2>&1; then
+    DOCKER_COMPOSE="docker compose"
+else
+    echo "❌ Docker Compose is not installed. Please install Docker Compose first."
+    exit 1
+fi
+
 # Function to check if Docker is installed
 check_docker() {
     if ! command -v docker &> /dev/null; then
@@ -17,12 +27,7 @@ check_docker() {
         exit 1
     fi
 
-    if ! command -v docker-compose &> /dev/null && ! docker compose version &> /dev/null; then
-        echo "❌ Docker Compose is not installed. Please install Docker Compose first."
-        exit 1
-    fi
-
-    echo "✅ Docker and Docker Compose are installed"
+    echo "✅ Docker and Docker Compose are installed (using: $DOCKER_COMPOSE)"
 }
 
 # Function to pull latest changes
@@ -41,7 +46,7 @@ pull_changes() {
 stop_containers() {
     echo ""
     echo "🛑 Stopping existing containers..."
-    docker-compose -f docker-compose.prod.yml down
+    $DOCKER_COMPOSE -f docker-compose.prod.yml down
     echo "✅ Containers stopped"
 }
 
@@ -49,7 +54,7 @@ stop_containers() {
 start_containers() {
     echo ""
     echo "🔨 Building and starting containers..."
-    docker-compose -f docker-compose.prod.yml up -d --build
+    $DOCKER_COMPOSE -f docker-compose.prod.yml up -d --build
     echo "✅ Containers started"
 }
 
@@ -57,14 +62,14 @@ start_containers() {
 show_status() {
     echo ""
     echo "📊 Container Status:"
-    docker-compose -f docker-compose.prod.yml ps
+    $DOCKER_COMPOSE -f docker-compose.prod.yml ps
 }
 
 # Function to show logs
 show_logs() {
     echo ""
     echo "📝 Recent logs:"
-    docker-compose -f docker-compose.prod.yml logs --tail=20
+    $DOCKER_COMPOSE -f docker-compose.prod.yml logs --tail=20
 }
 
 # Function to backup database
@@ -112,10 +117,10 @@ main() {
     echo "🌐 Application is running at: http://$(hostname -I | awk '{print $1}'):3000"
     echo ""
     echo "Useful commands:"
-    echo "  View logs:       docker-compose -f docker-compose.prod.yml logs -f"
-    echo "  Stop app:        docker-compose -f docker-compose.prod.yml down"
-    echo "  Restart app:     docker-compose -f docker-compose.prod.yml restart"
-    echo "  View status:     docker-compose -f docker-compose.prod.yml ps"
+    echo "  View logs:       $DOCKER_COMPOSE -f docker-compose.prod.yml logs -f"
+    echo "  Stop app:        $DOCKER_COMPOSE -f docker-compose.prod.yml down"
+    echo "  Restart app:     $DOCKER_COMPOSE -f docker-compose.prod.yml restart"
+    echo "  View status:     $DOCKER_COMPOSE -f docker-compose.prod.yml ps"
     echo ""
 }
 
