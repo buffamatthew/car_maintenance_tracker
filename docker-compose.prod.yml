@@ -25,7 +25,7 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.prod
     container_name: car-maintenance-frontend
     restart: unless-stopped
     ports:
@@ -34,9 +34,6 @@ services:
       - backend
     networks:
       - app-network
-    environment:
-      - NODE_ENV=production
-      - DANGEROUSLY_DISABLE_HOST_CHECK=true
 
 networks:
   app-network:
