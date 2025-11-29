@@ -36,6 +36,7 @@ services:
       - app-network
     environment:
       - NODE_ENV=production
+      - DANGEROUSLY_DISABLE_HOST_CHECK=true
 
 networks:
   app-network:

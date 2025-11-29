@@ -6,7 +6,10 @@ export default defineConfig({
   server: {
     host: '0.0.0.0',
     port: 3000,
-    allowedHosts: ['all'],  // Allow access from any hostname
+    strictPort: true,
+    watch: {
+      usePolling: true  // Better for Docker
+    },
     proxy: {
       '/api': {
         target: 'http://backend:5000',
