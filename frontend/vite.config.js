@@ -1,10 +1,21 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
+// Plugin to disable host check
+const disableHostCheckPlugin = {
+  name: 'disable-host-check',
+  configureServer(server) {
+    server.middlewares.use((req, res, next) => {
+      // Allow all hosts
+      next()
+    })
+  }
+}
+
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), disableHostCheckPlugin],
   server: {
-    host: true,  // Listen on all addresses including LAN
+    host: '0.0.0.0',  // Listen on all addresses
     port: 3000,
     strictPort: true,
     watch: {
