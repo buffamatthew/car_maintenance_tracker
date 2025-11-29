@@ -4,6 +4,8 @@ A Docker-based web application for tracking vehicle maintenance, accessible on m
 
 ## Quick Start
 
+### Development
+
 ```bash
 # Start the application
 docker-compose up --build
@@ -14,6 +16,15 @@ docker-compose up --build
 ```
 
 That's it! Open http://localhost:3000 in your browser.
+
+### Production Deployment
+
+For deploying to a server (Proxmox VM, VPS, etc.), see **[DEPLOYMENT.md](DEPLOYMENT.md)** for complete instructions.
+
+Quick deployment:
+```bash
+./deploy.sh
+```
 
 ## What's Working Now
 
@@ -28,10 +39,21 @@ That's it! Open http://localhost:3000 in your browser.
 - Dashboard showing all your vehicles
 - See current mileage for each vehicle
 
-### 🚧 Coming Next (Phase 4)
-- View detailed maintenance status for each vehicle
-- Visual gauges showing when maintenance is due
-- Track maintenance history
+### ✅ Dashboard & Tracking
+- Visual dashboard showing all vehicles
+- Top 3 urgent maintenance items per vehicle with progress bars
+- Color-coded status (overdue, due soon, good)
+- Track both scheduled and general maintenance
+- Multiple file attachments (photos, PDFs, documents)
+- Cost tracking for all maintenance
+- Export/import for data backup
+
+### ✅ Maintenance Features
+- Log scheduled maintenance (oil changes, tire rotations, etc.)
+- Log general maintenance (one-off repairs, upgrades)
+- Complete maintenance history with editing
+- File attachments (up to 5 per log, 16MB each)
+- Automatic status calculation based on mileage or time
 
 ## Tech Stack
 
@@ -81,8 +103,9 @@ Port 5000 is used by macOS Control Center (AirPlay). The backend runs on **port 
 
 ## Documentation
 
-- **PROJECT_STATUS.md** - Complete project status, phases, API docs, next steps
-- **SETUP.md** - Detailed setup and troubleshooting
+- **[DEPLOYMENT.md](DEPLOYMENT.md)** - Production deployment guide for Proxmox/VPS
+- **[PROJECT_STATUS.md](PROJECT_STATUS.md)** - Complete project status, phases, API docs, next steps
+- **SETUP.md** - Detailed setup and troubleshooting (development)
 - **TESTING.md** - Testing guide with examples
 
 ## API Endpoints
