@@ -12,6 +12,11 @@ COPY . .
 # Create uploads and instance directories
 RUN mkdir -p uploads instance
 
+# Copy and set up entrypoint script
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 EXPOSE 5000
 
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["python", "run.py"]
