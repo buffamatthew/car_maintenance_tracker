@@ -23,9 +23,10 @@ def create_app(config_class=Config):
     app.register_blueprint(general_maintenance.bp)
     app.register_blueprint(backup.bp)
 
-    # Create upload folder if it doesn't exist
+    # Create upload and instance folders if they don't exist
     import os
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+    os.makedirs(app.config['INSTANCE_FOLDER'], exist_ok=True)
 
     # Route to serve uploaded files
     @app.route('/uploads/<filename>')

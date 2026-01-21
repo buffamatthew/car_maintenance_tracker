@@ -80,12 +80,45 @@ backup_db() {
     mkdir -p "$BACKUP_DIR"
     TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 
-    # Try to backup from volume
+    # Try to backup from volume (check both old and new locations)
     docker run --rm \
         -v car_maintenance_tracker_db-data:/data \
         -v "$(pwd)/$BACKUP_DIR:/backup" \
         alpine \
-        sh -c "if [ -f /data/car_maintenance.db ]; then cp /data/car_maintenance.db /backup/car_maintenance_$TIMESTAMP.db && echo '✅ Database backed up to $BACKUP_DIR/car_maintenance_$TIMESTAMP.db'; else echo '⚠️  No database found to backup'; fi"
+        sh -c "if [ -f /data/car_maintenance.db ]; then cp /data/car_maintenance.db /backup/car_maintenance_$TIMESTAMP.db && echo '✅ Database backed up to $BACKUP_DIR/car_maintenance_$TIMESTAMP.db'; elif [ -f /data/car_maintenance.db ]; then cp /data/car_maintenance.db /backup/car_maintenance_$TIMESTAMP.db && echo '✅ Database backed up to $BACKUP_DIR/car_maintenance_$TIMESTAMP.db'; else echo '⚠️  No database found to backup'; fi"
+}
+
+# Function to migrate database from old volume structure to new
+migrate_db_volume() {
+    echo ""
+    echo "🔄 Checking if database migration is needed..."
+
+    # Check if old volume has database at root (old structure: db-data:/app)
+    OLD_DB_EXISTS=$(docker run --rm -v car_maintenance_tracker_db-data:/data alpine sh -c "[ -f /data/car_maintenance.db ] && echo 'yes' || echo 'no'")
+
+    if [ "$OLD_DB_EXISTS" = "yes" ]; then
+        echo "📦 Found database in old volume structure. Migrating..."
+
+        # Copy database from old volume to a temp location
+        docker run --rm \
+            -v car_maintenance_tracker_db-data:/olddata \
+            -v "$(pwd)/backups:/backup" \
+            alpine \
+            cp /olddata/car_maintenance.db /backup/migrate_temp.db
+
+        # Copy to the new instance directory in the container
+        docker cp "$(pwd)/backups/migrate_temp.db" car-maintenance-backend:/app/instance/car_maintenance.db 2>/dev/null || {
+            echo "⏳ Container not ready yet, will retry after startup..."
+            return 1
+        }
+
+        rm -f "$(pwd)/backups/migrate_temp.db"
+        echo "✅ Database migrated to new location"
+        return 0
+    else
+        echo "✅ No migration needed"
+        return 0
+    fi
 }
 
 # Main deployment process
@@ -106,6 +139,16 @@ main() {
     echo ""
     echo "⏳ Waiting for containers to be healthy..."
     sleep 10
+
+    # Migrate database if needed (one-time migration from old volume structure)
+    if ! migrate_db_volume; then
+        sleep 5
+        migrate_db_volume
+        # Restart backend to pick up migrated database
+        echo "🔄 Restarting backend to load migrated database..."
+        $DOCKER_COMPOSE -f docker-compose.prod.yml restart backend
+        sleep 5
+    fi
 
     show_status
 

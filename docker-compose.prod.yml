@@ -8,7 +8,7 @@ services:
     expose:
       - "5000"
     volumes:
-      - db-data:/app
+      - db-data:/app/instance
       - uploads-data:/app/uploads
     environment:
       - FLASK_ENV=production
