@@ -28,10 +28,12 @@ export const maintenanceItemAPI = {
 export const maintenanceLogAPI = {
   getAll: (itemId) => api.get('/maintenance-logs', { params: { maintenance_item_id: itemId } }),
   getById: (id) => api.get(`/maintenance-logs/${id}`),
-  create: (formData) => {
-    // FormData is already created in the component
-    // Don't set Content-Type - let axios set it automatically with boundary
-    return api.post('/maintenance-logs', formData)
+  create: (data) => {
+    // Use axios directly for FormData to avoid Content-Type: application/json header
+    if (data instanceof FormData) {
+      return axios.post(`${API_BASE_URL}/maintenance-logs`, data)
+    }
+    return api.post('/maintenance-logs', data)
   },
   update: (id, data) => {
     // Check if data is FormData or regular object
