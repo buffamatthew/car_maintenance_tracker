@@ -1,5 +1,5 @@
 import React from 'react'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom'
 import Dashboard from './pages/Dashboard'
 import AddAsset from './pages/AddAsset'
 import EditAsset from './pages/EditAsset'
@@ -18,7 +18,7 @@ function App() {
     <Router>
       <div className="App">
         <header className="App-header">
-          <h1>Upkeep</h1>
+          <h1><Link to="/" style={{ color: 'inherit', textDecoration: 'none' }}>Upkeep</Link></h1>
         </header>
         <main>
           <Routes>
