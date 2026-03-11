@@ -5,8 +5,7 @@ function ProgressBar({ percentage, status, showLabel = true }) {
   // Clamp percentage between 0 and 100
   const clampedPercentage = Math.min(Math.max(percentage, 0), 100)
 
-  // Invert for display (100% = full bar = overdue, 0% = empty bar = just serviced)
-  const displayPercentage = 100 - clampedPercentage
+  const displayPercentage = clampedPercentage
 
   const getStatusClass = () => {
     switch (status) {

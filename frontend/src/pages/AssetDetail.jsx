@@ -105,7 +105,7 @@ function AssetDetail() {
       let status = 'good'
       if (usageRemaining <= 0) {
         status = 'overdue'
-      } else if (usageRemaining <= item.frequency_value * 0.2) {
+      } else if (usageRemaining <= item.frequency_value * 0.3) {
         status = 'due-soon'
       }
 
@@ -136,7 +136,7 @@ function AssetDetail() {
       let status = 'good'
       if (daysRemaining <= 0) {
         status = 'overdue'
-      } else if (daysRemaining <= frequencyInDays * 0.2) {
+      } else if (daysRemaining <= frequencyInDays * 0.3) {
         status = 'due-soon'
       }
 
