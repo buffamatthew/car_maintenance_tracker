@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import Button from '../components/Button'
-import ProgressBar from '../components/ProgressBar'
 import CircularProgress from '../components/CircularProgress'
 import { assetAPI, maintenanceItemAPI, maintenanceLogAPI, generalMaintenanceAPI } from '../services/api'
 import { parseLocalDate } from '../utils/date'
@@ -281,13 +280,6 @@ function AssetDetail() {
                   </div>
 
                   <div className="card-body">
-                    <div className="progress-section">
-                      <ProgressBar
-                        percentage={status.percentageRemaining}
-                        status={status.status}
-                        showLabel={false}
-                      />
-                    </div>
                     <div className="info-row">
                       <span className="label">Frequency:</span>
                       <span>Every {item.frequency_value} {item.frequency_unit}</span>
