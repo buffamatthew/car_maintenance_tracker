@@ -192,6 +192,9 @@ function Dashboard() {
           <Button variant="outline" onClick={() => navigate('/settings')}>
             Settings
           </Button>
+          <Button onClick={() => navigate('/maintenance-log')}>
+            + Log Maintenance
+          </Button>
           <Button onClick={() => navigate('/add-asset')}>
             + Add Asset
           </Button>

@@ -185,6 +185,7 @@ function MaintenanceLog() {
             name="asset_id"
             value={formData.asset_id}
             onChange={handleChange}
+            disabled={!!preSelectedAssetId}
             options={[
               { value: '', label: 'Select an asset...' },
               ...assets.map(a => ({
@@ -201,6 +202,7 @@ function MaintenanceLog() {
               name="maintenance_item_id"
               value={formData.maintenance_item_id}
               onChange={handleChange}
+              disabled={!!preSelectedItemId}
               options={[
                 { value: '', label: 'Select a maintenance item...' },
                 ...maintenanceItems.map(item => ({

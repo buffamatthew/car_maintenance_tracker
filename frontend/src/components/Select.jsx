@@ -8,6 +8,7 @@ function Select({
   onChange,
   options,
   required = false,
+  disabled = false,
   error
 }) {
   return (
@@ -23,7 +24,8 @@ function Select({
         value={value}
         onChange={onChange}
         required={required}
-        className={`select ${error ? 'select-error' : ''}`}
+        disabled={disabled}
+        className={`select ${error ? 'select-error' : ''} ${disabled ? 'select-disabled' : ''}`}
       >
         {options.map((option) => (
           <option key={option.value} value={option.value}>
