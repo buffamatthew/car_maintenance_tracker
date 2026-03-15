@@ -28,16 +28,19 @@ def create_app(config_class=Config):
     from apscheduler.schedulers.background import BackgroundScheduler
     from app.services.reminders import check_and_send_reminders
 
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(
-        func=check_and_send_reminders,
-        args=[app],
-        trigger='interval',
-        hours=24,
-        id='reminder_check',
-        replace_existing=True
-    )
-    scheduler.start()
+    import os
+    if os.environ.get('WERKZEUG_RUN_MAIN') == 'true' or not app.debug:
+        scheduler = BackgroundScheduler()
+        scheduler.add_job(
+            func=check_and_send_reminders,
+            args=[app],
+            trigger='cron',
+            hour=8,
+            minute=0,
+            id='reminder_check',
+            replace_existing=True
+        )
+        scheduler.start()
 
     # Create upload and instance folders if they don't exist
     import os
