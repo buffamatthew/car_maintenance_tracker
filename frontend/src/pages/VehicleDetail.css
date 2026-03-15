@@ -272,6 +272,10 @@
     padding: 1.5rem;
   }
 
+  .maintenance-items {
+    gap: 2rem;
+  }
+
   .section-header {
     flex-direction: column;
     align-items: flex-start;

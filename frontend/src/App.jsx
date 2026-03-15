@@ -21,6 +21,7 @@ function App() {
       <div className="App">
         <header className="App-header">
           <h1><Link to="/" style={{ color: 'inherit', textDecoration: 'none' }}>Upkeep</Link></h1>
+          <span className="build-id">{BUILD_ID}</span>
         </header>
         <main>
           <Routes>
@@ -37,7 +38,6 @@ function App() {
             <Route path="/settings" element={<Settings />} />
           </Routes>
         </main>
-        <div className="build-id">Build: {BUILD_ID}</div>
       </div>
     </Router>
   )
