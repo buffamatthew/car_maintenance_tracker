@@ -40,6 +40,8 @@ main {
 @media (max-width: 768px) {
   main {
     padding: 1rem;
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
   }
 
   .App-header h1 {
