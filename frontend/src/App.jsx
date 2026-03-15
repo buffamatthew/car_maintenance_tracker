@@ -13,6 +13,8 @@ import GeneralMaintenanceHistory from './pages/GeneralMaintenanceHistory'
 import Settings from './pages/Settings'
 import './App.css'
 
+const BUILD_ID = __BUILD_ID__
+
 function App() {
   return (
     <Router>
@@ -35,6 +37,7 @@ function App() {
             <Route path="/settings" element={<Settings />} />
           </Routes>
         </main>
+        <div className="build-id">Build: {BUILD_ID}</div>
       </div>
     </Router>
   )

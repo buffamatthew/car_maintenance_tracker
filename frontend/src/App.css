@@ -1,6 +1,7 @@
 .App {
   min-height: 100vh;
   background-color: #f5f5f5;
+  overflow-x: hidden;
 }
 
 .App-header {
@@ -27,6 +28,13 @@ main {
   padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
+}
+
+.build-id {
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.7rem;
+  color: #9ca3af;
 }
 
 @media (max-width: 768px) {

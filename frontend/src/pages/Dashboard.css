@@ -214,6 +214,11 @@
     gap: 1rem;
   }
 
+  .header-actions {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
   .vehicles-grid {
     grid-template-columns: 1fr;
   }
