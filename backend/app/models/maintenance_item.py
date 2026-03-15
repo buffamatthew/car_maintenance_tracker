@@ -11,6 +11,8 @@ class MaintenanceItem(db.Model):
     frequency_value = db.Column(db.Integer, nullable=False)
     frequency_unit = db.Column(db.String(20), nullable=False)  # 'days', 'weeks', 'months', 'years' for time; asset's usage_metric for usage
     notes = db.Column(db.Text)
+    reminders_enabled = db.Column(db.Boolean, default=False)
+    last_reminder_sent = db.Column(db.DateTime, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
@@ -26,6 +28,8 @@ class MaintenanceItem(db.Model):
             'frequency_value': self.frequency_value,
             'frequency_unit': self.frequency_unit,
             'notes': self.notes,
+            'reminders_enabled': self.reminders_enabled,
+            'last_reminder_sent': self.last_reminder_sent.isoformat() if self.last_reminder_sent else None,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at else None
         }

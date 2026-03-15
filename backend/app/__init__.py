@@ -16,12 +16,28 @@ def create_app(config_class=Config):
     CORS(app)
 
     # Register blueprints
-    from app.routes import assets, maintenance_items, maintenance_logs, general_maintenance, backup
+    from app.routes import assets, maintenance_items, maintenance_logs, general_maintenance, backup, settings
     app.register_blueprint(assets.bp)
     app.register_blueprint(maintenance_items.bp)
     app.register_blueprint(maintenance_logs.bp)
     app.register_blueprint(general_maintenance.bp)
     app.register_blueprint(backup.bp)
+    app.register_blueprint(settings.bp)
+
+    # Set up reminder scheduler
+    from apscheduler.schedulers.background import BackgroundScheduler
+    from app.services.reminders import check_and_send_reminders
+
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(
+        func=check_and_send_reminders,
+        args=[app],
+        trigger='interval',
+        hours=24,
+        id='reminder_check',
+        replace_existing=True
+    )
+    scheduler.start()
 
     # Create upload and instance folders if they don't exist
     import os

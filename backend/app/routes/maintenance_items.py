@@ -31,7 +31,8 @@ def create_maintenance_item():
         maintenance_type=data.get('maintenance_type', 'time'),
         frequency_value=data['frequency_value'],
         frequency_unit=data['frequency_unit'],
-        notes=data.get('notes')
+        notes=data.get('notes'),
+        reminders_enabled=data.get('reminders_enabled', False)
     )
 
     db.session.add(item)
@@ -49,6 +50,8 @@ def update_maintenance_item(item_id):
     item.frequency_value = data.get('frequency_value', item.frequency_value)
     item.frequency_unit = data.get('frequency_unit', item.frequency_unit)
     item.notes = data.get('notes', item.notes)
+    if 'reminders_enabled' in data:
+        item.reminders_enabled = data['reminders_enabled']
 
     db.session.commit()
 

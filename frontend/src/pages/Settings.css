@@ -142,7 +142,27 @@
   font-weight: 600;
 }
 
+.email-settings-form {
+  max-width: 600px;
+}
+
+.form-row-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.email-settings-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
 @media (max-width: 768px) {
+  .form-row-2col {
+    grid-template-columns: 1fr;
+  }
+
   .settings-page {
     padding: 1rem;
   }

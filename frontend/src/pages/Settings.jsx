@@ -1,7 +1,9 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Button from '../components/Button'
-import { backupAPI } from '../services/api'
+import Input from '../components/Input'
+import Select from '../components/Select'
+import { backupAPI, settingsAPI } from '../services/api'
 import './Settings.css'
 
 function Settings() {
@@ -13,6 +15,65 @@ function Settings() {
   const [importMode, setImportMode] = useState('merge')
   const [message, setMessage] = useState(null)
   const [error, setError] = useState(null)
+  const [savingEmail, setSavingEmail] = useState(false)
+  const [testingEmail, setTestingEmail] = useState(false)
+
+  const [emailSettings, setEmailSettings] = useState({
+    notification_email: '',
+    smtp_host: '',
+    smtp_port: '587',
+    smtp_username: '',
+    smtp_password: '',
+    smtp_use_tls: 'true',
+    reminder_threshold_percent: '30',
+    reminder_interval_days: '1',
+  })
+
+  useEffect(() => {
+    loadEmailSettings()
+  }, [])
+
+  const loadEmailSettings = async () => {
+    try {
+      const response = await settingsAPI.get()
+      setEmailSettings(prev => ({ ...prev, ...response.data }))
+    } catch (err) {
+      console.error('Error loading settings:', err)
+    }
+  }
+
+  const handleEmailSettingChange = (e) => {
+    const { name, value } = e.target
+    setEmailSettings(prev => ({ ...prev, [name]: value }))
+  }
+
+  const handleSaveEmailSettings = async () => {
+    try {
+      setSavingEmail(true)
+      setMessage(null)
+      setError(null)
+      await settingsAPI.update(emailSettings)
+      setMessage('Email settings saved successfully!')
+    } catch (err) {
+      setError('Failed to save email settings: ' + (err.response?.data?.error || err.message))
+    } finally {
+      setSavingEmail(false)
+    }
+  }
+
+  const handleTestEmail = async () => {
+    try {
+      setTestingEmail(true)
+      setMessage(null)
+      setError(null)
+      await settingsAPI.testEmail()
+      setMessage('Test email sent! Check your inbox.')
+    } catch (err) {
+      setError('Failed to send test email: ' + (err.response?.data?.error || err.message))
+    } finally {
+      setTestingEmail(false)
+    }
+  }
 
   const handleExport = async () => {
     try {
@@ -116,6 +177,103 @@ function Settings() {
           {error}
         </div>
       )}
+
+      <div className="settings-section">
+        <h3>Email Notifications</h3>
+        <p className="section-description">
+          Configure email reminders for maintenance items that have reminders enabled.
+        </p>
+
+        <div className="email-settings-form">
+          <Input
+            label="Notification Email"
+            name="notification_email"
+            type="email"
+            value={emailSettings.notification_email}
+            onChange={handleEmailSettingChange}
+            placeholder="your@email.com"
+          />
+
+          <h4 style={{ marginTop: '1.5rem', marginBottom: '0.5rem' }}>SMTP Settings</h4>
+          <p className="section-description" style={{ marginBottom: '1rem' }}>
+            For Gmail, use smtp.gmail.com with an App Password. For Outlook, use smtp.office365.com.
+          </p>
+
+          <div className="form-row-2col">
+            <Input
+              label="SMTP Host"
+              name="smtp_host"
+              value={emailSettings.smtp_host}
+              onChange={handleEmailSettingChange}
+              placeholder="smtp.gmail.com"
+            />
+            <Input
+              label="SMTP Port"
+              name="smtp_port"
+              type="number"
+              value={emailSettings.smtp_port}
+              onChange={handleEmailSettingChange}
+              placeholder="587"
+            />
+          </div>
+
+          <div className="form-row-2col">
+            <Input
+              label="SMTP Username"
+              name="smtp_username"
+              value={emailSettings.smtp_username}
+              onChange={handleEmailSettingChange}
+              placeholder="your@email.com"
+            />
+            <Input
+              label="SMTP Password"
+              name="smtp_password"
+              type="password"
+              value={emailSettings.smtp_password}
+              onChange={handleEmailSettingChange}
+              placeholder="App password"
+            />
+          </div>
+
+          <h4 style={{ marginTop: '1.5rem', marginBottom: '0.5rem' }}>Reminder Settings</h4>
+
+          <div className="form-row-2col">
+            <Input
+              label="Remind when below (%)"
+              name="reminder_threshold_percent"
+              type="number"
+              value={emailSettings.reminder_threshold_percent}
+              onChange={handleEmailSettingChange}
+              min="1"
+              max="100"
+            />
+            <Input
+              label="Reminder interval (days)"
+              name="reminder_interval_days"
+              type="number"
+              value={emailSettings.reminder_interval_days}
+              onChange={handleEmailSettingChange}
+              min="1"
+            />
+          </div>
+
+          <div className="email-settings-actions">
+            <Button
+              onClick={handleSaveEmailSettings}
+              disabled={savingEmail}
+            >
+              {savingEmail ? 'Saving...' : 'Save Email Settings'}
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handleTestEmail}
+              disabled={testingEmail}
+            >
+              {testingEmail ? 'Sending...' : 'Send Test Email'}
+            </Button>
+          </div>
+        </div>
+      </div>
 
       <div className="settings-section">
         <h3>Data Backup</h3>

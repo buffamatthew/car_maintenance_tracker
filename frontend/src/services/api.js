@@ -60,6 +60,12 @@ export const generalMaintenanceAPI = {
   deleteAttachment: (id) => api.delete(`/general-maintenance/attachments/${id}`)
 }
 
+export const settingsAPI = {
+  get: () => api.get('/settings'),
+  update: (data) => api.put('/settings', data),
+  testEmail: () => api.post('/settings/test-email'),
+}
+
 export const backupAPI = {
   export: () => {
     return axios.get(`${API_BASE_URL}/backup/export`, {

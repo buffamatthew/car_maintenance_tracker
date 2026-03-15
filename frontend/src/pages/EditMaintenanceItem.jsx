@@ -21,7 +21,8 @@ function EditMaintenanceItem() {
     maintenance_type: 'time',
     frequency_value: '',
     frequency_unit: 'months',
-    notes: ''
+    notes: '',
+    reminders_enabled: false
   })
 
   useEffect(() => {
@@ -42,7 +43,8 @@ function EditMaintenanceItem() {
         maintenance_type: item.maintenance_type,
         frequency_value: item.frequency_value,
         frequency_unit: item.frequency_unit,
-        notes: item.notes || ''
+        notes: item.notes || '',
+        reminders_enabled: item.reminders_enabled || false
       })
       setAsset(assetRes.data)
     } catch (err) {
@@ -79,7 +81,8 @@ function EditMaintenanceItem() {
         maintenance_type: formData.maintenance_type,
         frequency_value: parseInt(formData.frequency_value),
         frequency_unit: formData.frequency_unit,
-        notes: formData.notes || null
+        notes: formData.notes || null,
+        reminders_enabled: formData.reminders_enabled
       })
 
       navigate(`/asset/${assetId}`)
@@ -191,6 +194,16 @@ function EditMaintenanceItem() {
             placeholder="e.g., Use specific brand, special instructions..."
             rows={4}
           />
+
+          <label className="toggle-label">
+            <input
+              type="checkbox"
+              name="reminders_enabled"
+              checked={formData.reminders_enabled}
+              onChange={(e) => setFormData(prev => ({ ...prev, reminders_enabled: e.target.checked }))}
+            />
+            <span className="toggle-text">Enable email reminders</span>
+          </label>
         </div>
 
         <div className="form-footer">

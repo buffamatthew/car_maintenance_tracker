@@ -11,7 +11,8 @@ function MaintenanceItemForm({ onAdd, onCancel, usageMetric }) {
     maintenance_type: 'time',
     frequency_value: '',
     frequency_unit: 'months',
-    notes: ''
+    notes: '',
+    reminders_enabled: false
   })
 
   const handleChange = (e) => {
@@ -43,7 +44,8 @@ function MaintenanceItemForm({ onAdd, onCancel, usageMetric }) {
       maintenance_type: 'time',
       frequency_value: '',
       frequency_unit: 'months',
-      notes: ''
+      notes: '',
+      reminders_enabled: false
     })
   }
 
@@ -117,6 +119,18 @@ function MaintenanceItemForm({ onAdd, onCancel, usageMetric }) {
           placeholder="e.g., Brand to use, specific instructions..."
           rows={3}
         />
+      </div>
+
+      <div className="form-row">
+        <label className="toggle-label">
+          <input
+            type="checkbox"
+            name="reminders_enabled"
+            checked={formData.reminders_enabled}
+            onChange={(e) => setFormData(prev => ({ ...prev, reminders_enabled: e.target.checked }))}
+          />
+          <span className="toggle-text">Enable email reminders</span>
+        </label>
       </div>
 
       <div className="form-actions">
