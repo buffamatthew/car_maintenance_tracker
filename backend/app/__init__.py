@@ -31,19 +31,28 @@ def create_app(config_class=Config):
     import os
     if os.environ.get('WERKZEUG_RUN_MAIN') == 'true' or not app.debug:
         scheduler = BackgroundScheduler()
+        # Run once shortly after startup
+        from datetime import datetime, timedelta
+        scheduler.add_job(
+            func=check_and_send_reminders,
+            args=[app],
+            trigger='date',
+            run_date=datetime.now() + timedelta(seconds=30),
+            id='reminder_check_startup',
+        )
+        # Then daily at 8 AM
         scheduler.add_job(
             func=check_and_send_reminders,
             args=[app],
             trigger='cron',
             hour=8,
             minute=0,
-            id='reminder_check',
+            id='reminder_check_daily',
             replace_existing=True
         )
         scheduler.start()
 
     # Create upload and instance folders if they don't exist
-    import os
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
     os.makedirs(app.config['INSTANCE_FOLDER'], exist_ok=True)
 
